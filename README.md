@@ -2,7 +2,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.png" />
-  <img src="docs/images/readme-title-light.png" alt="PlayStation 5: Your PS5, fully local. An AI-generated picture of a PS5 with a DualSense controller on a TV board; the TV shows a status card with PlayStation 5, On, Playing, the game Starfall Odyssey and trophy level 287 (made-up values)." />
+  <img src="docs/images/readme-title-light.png" alt="PlayStation 5: Your PS5, fully local. An AI-generated picture of a PS5 with a DualSense controller on a TV board in a dim living room, the TV shows a mountain lake." />
 </picture>
 
 <p>Status, wake-up and rest mode for the PS5 in Home Assistant.<br/>

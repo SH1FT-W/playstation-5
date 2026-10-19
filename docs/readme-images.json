@@ -1,5 +1,5 @@
 {
-  "$comment": "Content of the README card pictures. Render with sh1ft-w.github.io/theme/v1/readme-images: node render.mjs <this repo> cards (only cards: the title image is not made by render.mjs). The title image comes from docs/readme-title.html (photo docs/images/readme-photo.webp, AI-generated, the TV card shows made-up values), rendered with headless Chrome at 1280x640, scale 2, ?theme=light and ?theme=dark.",
+  "$comment": "Content of the README card pictures. Render with sh1ft-w.github.io/theme/v1/readme-images: node render.mjs <this repo> cards (only cards: the title image is not made by render.mjs). The title image comes from docs/readme-title.html (photo docs/images/readme-photo.webp, AI-generated), rendered with headless Chrome at 1280x640, scale 2, ?theme=light and ?theme=dark.",
   "colors": {
     "light": {
       "bg": "#F4F6FA",
