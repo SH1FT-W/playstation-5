@@ -8,14 +8,14 @@
 <p>Status, wake-up and rest mode for the PS5 in Home Assistant.<br/>
 Fully local, game and trophies optional.</p>
 
-[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fps5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/ps5/releases/latest)
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fplaystation-5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/playstation-5/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0070D1?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![HACS](https://img.shields.io/badge/HACS-custom%20repository-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-local%20polling-0070D1?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-platinum%20(self--assessed)-0070D1?style=flat-square&labelColor=111111)](custom_components/ps5/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-GPLv3-0070D1?style=flat-square&labelColor=111111)](LICENSE)
 
-<p><a href="https://sh1ft-w.github.io/ps5"><b>Website</b></a> &nbsp;·&nbsp; <a href="#new">New</a> &nbsp;·&nbsp; <a href="#features">Features</a> &nbsp;·&nbsp; <a href="#entities">Entities</a> &nbsp;·&nbsp; <a href="#installation">Install</a> &nbsp;·&nbsp; <a href="#privacy">Privacy</a> &nbsp;·&nbsp; <a href="#troubleshooting">Troubleshooting</a> &nbsp;·&nbsp; <a href="CHANGELOG.md">Changelog</a></p>
+<p><a href="https://sh1ft-w.github.io/playstation-5"><b>Website</b></a> &nbsp;·&nbsp; <a href="#new">New</a> &nbsp;·&nbsp; <a href="#features">Features</a> &nbsp;·&nbsp; <a href="#entities">Entities</a> &nbsp;·&nbsp; <a href="#installation">Install</a> &nbsp;·&nbsp; <a href="#privacy">Privacy</a> &nbsp;·&nbsp; <a href="#troubleshooting">Troubleshooting</a> &nbsp;·&nbsp; <a href="CHANGELOG.md">Changelog</a></p>
 
 </div>
 
@@ -86,12 +86,12 @@ image.playstation_5_game_cover             image.playstation_5_avatar
 
 ### HACS (custom repository)
 
-1. In HACS, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/ps5` with the type **Integration**.
+1. In HACS, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
 2. Search for **PlayStation 5**, download it and restart Home Assistant.
 
 ### Manual
 
-1. Download the [latest release](https://github.com/SH1FT-W/ps5/releases/latest).
+1. Download the [latest release](https://github.com/SH1FT-W/playstation-5/releases/latest).
 2. Copy the folder `custom_components/ps5` into `/config/custom_components/` and restart Home Assistant.
 
 Requires Home Assistant 2026.9 or newer.
@@ -159,7 +159,7 @@ actions:
       custom_components.ps5: debug
   ```
 
-When you open an [issue](https://github.com/SH1FT-W/ps5/issues), please attach the diagnostics file. Never post your NPSSO token.
+When you open an [issue](https://github.com/SH1FT-W/playstation-5/issues), please attach the diagnostics file. Never post your NPSSO token.
 
 ## Removal
 

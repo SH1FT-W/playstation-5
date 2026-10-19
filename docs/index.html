@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#070A10" media="(prefers-color-scheme: dark)">
 <meta property="og:title" content="PlayStation 5 for Home Assistant">
 <meta property="og:description" content="Status, wake-up and rest mode for the PS5, fully local. Game and trophies optional.">
-<meta property="og:image" content="https://sh1ft-w.github.io/ps5/logo.png">
+<meta property="og:image" content="https://sh1ft-w.github.io/playstation-5/logo.png">
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -286,7 +286,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <a href="#cloud" class="opt"><span class="en">PSN cloud</span><span class="de">PSN-Cloud</span></a>
       <a href="#entities"><span class="en">Entities</span><span class="de">Entitäten</span></a>
       <a href="#faq" class="opt"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></a>
-      <a href="https://github.com/SH1FT-W/ps5">GitHub</a>
+      <a href="https://github.com/SH1FT-W/playstation-5">GitHub</a>
     </div>
     <button class="iconbtn" id="theme" type="button" aria-label="Light or dark">
       <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -305,7 +305,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
     <p class="lead reveal d2"><span class="en">PlayStation 5 talks to your console the way the PS App does at home: <strong>status, wake-up and rest mode</strong> without cloud, MQTT or an extra app. The current game, trophies and online status come <strong>optionally</strong> from the PSN cloud.</span><span class="de">PlayStation 5 spricht mit deiner Konsole wie die PS-App im Heimnetz: <strong>Status, Aufwecken und Ruhemodus</strong> ohne Cloud, MQTT oder Zusatz-App. Laufendes Spiel, Trophäen und Online-Status kommen <strong>auf Wunsch</strong> aus der PSN-Cloud.</span></p>
     <div class="cta reveal d3">
       <a class="btn" href="#install"><span class="en">Install with HACS</span><span class="de">Mit HACS installieren</span></a>
-      <a class="btn ghost" href="https://github.com/SH1FT-W/ps5#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/playstation-5#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
     </div>
     <p class="meta reveal d3">
       <span class="pill"><i></i><span id="ps5-version">Version 26.10.2</span></span>
@@ -353,7 +353,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <div class="b s4 reveal d1"><span class="tag">26.10.2</span><h3><span class="en">Re-pair keeps the cloud</span><span class="de">Neu koppeln behält die Cloud</span></h3><p><span class="en">A new PIN no longer drops the PSN cloud settings from the entry.</span><span class="de">Eine neue PIN wirft die PSN-Cloud-Einstellungen nicht mehr aus dem Eintrag.</span></p></div>
       <div class="b s4 reveal d2"><span class="tag">26.10.1</span><h3><span class="en">Calendar versions</span><span class="de">Kalender-Versionen</span></h3><p><span class="en">Releases count year.month.number: <code>26.10.2</code> is the second release of October 2026.</span><span class="de">Releases zählen Jahr.Monat.Nummer: <code>26.10.2</code> ist das zweite Release im Oktober 2026.</span></p></div>
     </div>
-    <p class="cap reveal"><span class="en">Everything that changed, release by release: the <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">changelog</a>.</span><span class="de">Alles, was sich geändert hat, Release für Release: das <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">Changelog</a>.</span></p>
+    <p class="cap reveal"><span class="en">Everything that changed, release by release: the <a href="https://github.com/SH1FT-W/playstation-5/blob/main/CHANGELOG.md">changelog</a>.</span><span class="de">Alles, was sich geändert hat, Release für Release: das <a href="https://github.com/SH1FT-W/playstation-5/blob/main/CHANGELOG.md">Changelog</a>.</span></p>
   </div>
 </section>
 
@@ -461,7 +461,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
           <li class="en">In HACS, add a custom repository of type <b>Integration</b>:</li>
           <li class="de">Füge in HACS ein benutzerdefiniertes Repository vom Typ <b>Integration</b> hinzu:</li>
         </ol>
-        <div class="repo"><code id="repo">https://github.com/SH1FT-W/ps5</code><button class="copy" type="button" data-copy="repo"><span class="en">Copy</span><span class="de">Kopieren</span></button></div>
+        <div class="repo"><code id="repo">https://github.com/SH1FT-W/playstation-5</code><button class="copy" type="button" data-copy="repo"><span class="en">Copy</span><span class="de">Kopieren</span></button></div>
         <ol class="steps" style="counter-reset: s 1">
           <li class="en"><b>Download PlayStation 5</b> and restart Home Assistant.</li>
           <li class="en"><b>Add the console.</b> It usually shows up under Settings, Devices &amp; services, Discovered. Otherwise add the PlayStation 5 integration and pick it or enter its IP address.</li>
@@ -494,7 +494,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       </div>
       <div class="panel full reveal">
         <h3><span class="en">Without HACS</span><span class="de">Ohne HACS</span></h3>
-        <p class="muted"><span class="en">Download the <a href="https://github.com/SH1FT-W/ps5/releases/latest">latest release</a>, copy its <code>custom_components/ps5</code> folder into <code>/config/custom_components/</code>, restart Home Assistant and add the console.</span><span class="de">Lade das <a href="https://github.com/SH1FT-W/ps5/releases/latest">neueste Release</a> herunter, kopiere den Ordner <code>custom_components/ps5</code> nach <code>/config/custom_components/</code>, starte Home Assistant neu und füge die Konsole hinzu.</span></p>
+        <p class="muted"><span class="en">Download the <a href="https://github.com/SH1FT-W/playstation-5/releases/latest">latest release</a>, copy its <code>custom_components/ps5</code> folder into <code>/config/custom_components/</code>, restart Home Assistant and add the console.</span><span class="de">Lade das <a href="https://github.com/SH1FT-W/playstation-5/releases/latest">neueste Release</a> herunter, kopiere den Ordner <code>custom_components/ps5</code> nach <code>/config/custom_components/</code>, starte Home Assistant neu und füge die Konsole hinzu.</span></p>
       </div>
     </div>
   </div>
@@ -513,7 +513,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <details><summary><span class="en">Why are the entities never unavailable?</span><span class="de">Warum sind die Entitäten nie nicht verfügbar?</span></summary><p><span class="en">A console that does not answer is fully off or not on the network, so it counts as off, not as an error. Only the cloud entities are unavailable without a connection to Sony.</span><span class="de">Eine Konsole, die nicht antwortet, ist komplett aus oder nicht im Netz, also gilt sie als aus, nicht als Fehler. Nur die Cloud-Entitäten sind ohne Verbindung zu Sony nicht verfügbar.</span></p></details>
       <details><summary><span class="en">Can it install system updates or start games?</span><span class="de">Kann sie Updates installieren oder Spiele starten?</span></summary><p><span class="en">No. The PS5 installs updates itself in rest mode ("Install automatically" in its settings). Starting games or sending buttons would need a full Remote Play session.</span><span class="de">Nein. Die PS5 installiert Updates im Ruhemodus selbst („Automatisch installieren“ in ihren Einstellungen). Spiele starten oder Tasten senden bräuchte eine volle Remote-Play-Sitzung.</span></p></details>
       <details><summary><span class="en">Switching off says the pairing is unknown.</span><span class="de">Ausschalten meldet, die Kopplung sei unbekannt.</span></summary><p><span class="en">The device was removed on the PS5 under Remote Play. Home Assistant asks for a new PIN.</span><span class="de">Das Gerät wurde an der PS5 unter Remote Play entfernt. Home Assistant fragt nach einer neuen PIN.</span></p></details>
-      <details><summary><span class="en">How do I report a bug?</span><span class="de">Wie melde ich einen Fehler?</span></summary><p><span class="en">Download the diagnostics (Settings, Devices &amp; services, PlayStation 5, three dots) and attach them to a <a href="https://github.com/SH1FT-W/ps5/issues">GitHub issue</a>. Keys, tokens, account IDs, IP and MAC address are redacted.</span><span class="de">Diagnose herunterladen (Einstellungen, Geräte &amp; Dienste, PlayStation 5, drei Punkte) und an ein <a href="https://github.com/SH1FT-W/ps5/issues">GitHub-Issue</a> hängen. Schlüssel, Tokens, Konto-IDs, IP- und MAC-Adresse sind geschwärzt.</span></p></details>
+      <details><summary><span class="en">How do I report a bug?</span><span class="de">Wie melde ich einen Fehler?</span></summary><p><span class="en">Download the diagnostics (Settings, Devices &amp; services, PlayStation 5, three dots) and attach them to a <a href="https://github.com/SH1FT-W/playstation-5/issues">GitHub issue</a>. Keys, tokens, account IDs, IP and MAC address are redacted.</span><span class="de">Diagnose herunterladen (Einstellungen, Geräte &amp; Dienste, PlayStation 5, drei Punkte) und an ein <a href="https://github.com/SH1FT-W/playstation-5/issues">GitHub-Issue</a> hängen. Schlüssel, Tokens, Konto-IDs, IP- und MAC-Adresse sind geschwärzt.</span></p></details>
     </div>
   </div>
 </section>
@@ -525,7 +525,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
     <p class="lead"><span class="en">One integration, on and off, no cloud needed.</span><span class="de">Eine Integration, an und aus, keine Cloud nötig.</span></p>
     <div class="cta">
       <a class="btn" href="#install"><span class="en">Install PlayStation 5</span><span class="de">PlayStation 5 installieren</span></a>
-      <a class="btn ghost" href="https://github.com/SH1FT-W/ps5/releases"><span class="en">Releases</span><span class="de">Releases</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/playstation-5/releases"><span class="en">Releases</span><span class="de">Releases</span></a>
     </div>
   </div>
 </section>
@@ -534,13 +534,13 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
   <div class="wrap">
     <span class="brand"><img src="logo.png" alt="">PlayStation 5</span>
     <nav>
-      <a href="https://github.com/SH1FT-W/ps5#readme">README</a>
-      <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">Changelog</a>
-      <a href="https://github.com/SH1FT-W/ps5/releases">Releases</a>
-      <a href="https://github.com/SH1FT-W/ps5/issues"><span class="en">Issues</span><span class="de">Fehler melden</span></a>
+      <a href="https://github.com/SH1FT-W/playstation-5#readme">README</a>
+      <a href="https://github.com/SH1FT-W/playstation-5/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/SH1FT-W/playstation-5/releases">Releases</a>
+      <a href="https://github.com/SH1FT-W/playstation-5/issues"><span class="en">Issues</span><span class="de">Fehler melden</span></a>
       <a href="https://hacs.xyz">HACS</a>
-      <a href="https://github.com/SH1FT-W/ps5">GitHub</a>
-      <a href="https://github.com/SH1FT-W/ps5/blob/main/LICENSE"><span class="en">GPLv3 License</span><span class="de">GPLv3-Lizenz</span></a>
+      <a href="https://github.com/SH1FT-W/playstation-5">GitHub</a>
+      <a href="https://github.com/SH1FT-W/playstation-5/blob/main/LICENSE"><span class="en">GPLv3 License</span><span class="de">GPLv3-Lizenz</span></a>
     </nav>
     <p class="fine"><span class="en">PlayStation 5 is an independent project and is not affiliated with, endorsed by or sponsored by Sony Interactive Entertainment, Home Assistant or Nabu Casa. PlayStation, PS5 and PlayStation Network are trademarks or registered trademarks of Sony Interactive Entertainment Inc. Protocol and key tables after pyremoteplay (ktnrg45, GPLv3). Copyright 2026 SH1FT-W.</span><span class="de">PlayStation 5 ist ein unabhängiges Projekt und gehört weder zu Sony Interactive Entertainment, Home Assistant noch Nabu Casa und wird von ihnen nicht unterstützt. PlayStation, PS5 und PlayStation Network sind Marken oder eingetragene Marken von Sony Interactive Entertainment Inc. Protokoll und Schlüsseltabellen nach pyremoteplay (ktnrg45, GPLv3). Copyright 2026 SH1FT-W.</span></p>
   </div>
@@ -563,11 +563,11 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
   (function () {
     var el = document.getElementById('ps5-version');
     function show(v) { if (v && el) el.textContent = 'Version ' + v; }
-    fetch('https://raw.githubusercontent.com/SH1FT-W/ps5/main/custom_components/ps5/manifest.json', { cache: 'no-store' })
+    fetch('https://raw.githubusercontent.com/SH1FT-W/playstation-5/main/custom_components/ps5/manifest.json', { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { if (j && j.version) show(String(j.version)); else throw 0; })
       .catch(function () {
-        fetch('https://api.github.com/repos/SH1FT-W/ps5/releases/latest')
+        fetch('https://api.github.com/repos/SH1FT-W/playstation-5/releases/latest')
           .then(function (r) { return r.ok ? r.json() : null; })
           .then(function (j) { show(j && String(j.tag_name || '').replace(/^v/, '')); })
           .catch(function () {});
