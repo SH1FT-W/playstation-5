@@ -1,0 +1,206 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "PlayStation 5",
+        "description": "Wähle deine PS5 oder gib ihre IP-Adresse ein. Sie muss an sein oder im Ruhemodus.",
+        "data": {
+          "host": "PS5"
+        },
+        "data_description": {
+          "host": "Im Netz gefunden, oder eine IP-Adresse eingeben."
+        }
+      },
+      "link": {
+        "title": "{name} verknüpfen",
+        "description": "Öffne an der PS5 Einstellungen → System → Remote Play → Gerät verknüpfen und gib die 8-stellige PIN ein.\n\nPSN-Konto-ID: eintragen, wenn du sie kennst (Zahl). Sonst leer lassen und stattdessen ein NPSSO-Token einfügen: bei playstation.com anmelden, dann {sso_url} öffnen und den Wert hinter „npsso“ kopieren. Das Token dient nur einmal zum Nachschlagen der ID und wird nicht gespeichert.",
+        "data": {
+          "account_id": "PSN-Konto-ID",
+          "npsso": "NPSSO-Token (statt Konto-ID)",
+          "pin": "PIN"
+        },
+        "data_description": {
+          "npsso": "64 Zeichen von {sso_url}, nachdem du bei playstation.com angemeldet bist."
+        }
+      },
+      "reconfigure": {
+        "title": "PlayStation 5",
+        "data": {
+          "host": "IP-Adresse"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Die PS5 antwortet nicht. Ist sie an oder im Ruhemodus?",
+      "not_linking": "Die PS5 wartet nicht auf eine Verknüpfung. Öffne zuerst „Gerät verknüpfen“ an der PS5.",
+      "link_failed": "Verknüpfen fehlgeschlagen: falsche PIN oder Konto-ID.",
+      "invalid_pin": "Die PIN hat 8 Ziffern.",
+      "invalid_account": "Gib die PSN-Konto-ID als Zahl ein.",
+      "invalid_npsso": "Sony hat das NPSSO-Token abgelehnt. Bei playstation.com neu anmelden und ein frisches kopieren.",
+      "psn_unreachable": "Sony war zum Nachschlagen der Konto-ID nicht erreichbar. Nochmal versuchen oder die ID eintragen.",
+      "account_missing": "Gib die PSN-Konto-ID oder ein NPSSO-Token ein."
+    },
+    "abort": {
+      "already_configured": "Diese PS5 ist schon eingerichtet.",
+      "cannot_connect": "Die PS5 antwortet nicht.",
+      "reauth_successful": "PS5 neu verknüpft.",
+      "reconfigure_successful": "Einstellungen gespeichert.",
+      "wrong_device": "Unter dieser Adresse antwortet eine andere PS5."
+    }
+  },
+  "entity": {
+    "switch": {
+      "power": {
+        "name": "Ein/Aus"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "on": "An",
+          "rest": "Ruhemodus",
+          "off": "Aus"
+        }
+      },
+      "game": {
+        "name": "Spiel"
+      },
+      "online_status": {
+        "name": "Online-Status",
+        "state": {
+          "offline": "Offline",
+          "availabletoplay": "Online",
+          "availabletocommunicate": "Online (App)",
+          "busy": "Beschäftigt"
+        }
+      },
+      "last_online": {
+        "name": "Zuletzt online"
+      },
+      "trophy_level": {
+        "name": "Trophäen-Stufe"
+      },
+      "trophy_progress": {
+        "name": "Trophäen-Fortschritt"
+      },
+      "trophies_platinum": {
+        "name": "Platin-Trophäen"
+      },
+      "trophies_gold": {
+        "name": "Gold-Trophäen"
+      },
+      "trophies_silver": {
+        "name": "Silber-Trophäen"
+      },
+      "trophies_bronze": {
+        "name": "Bronze-Trophäen"
+      },
+      "online_id": {
+        "name": "Online-ID"
+      },
+      "psn_token_expires": {
+        "name": "PSN-Anmeldung läuft ab"
+      }
+    },
+    "binary_sensor": {
+      "ps_plus": {
+        "name": "PlayStation Plus"
+      }
+    },
+    "image": {
+      "game_cover": {
+        "name": "Spiel-Cover"
+      },
+      "avatar": {
+        "name": "Avatar"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Systemsoftware"
+      }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "Die PS5 hat den Befehl nicht angenommen: {error}"
+    },
+    "not_linked": {
+      "message": "Die PS5 kennt diese Verknüpfung nicht mehr. Bitte neu verknüpfen."
+    },
+    "psn_expired": {
+      "message": "PSN-Anmeldung abgelaufen – unter Reparaturen erneuern."
+    },
+    "psn_unreachable": {
+      "message": "PlayStation Network nicht erreichbar: {error}"
+    },
+    "firmware_unreachable": {
+      "message": "Sonys Systemsoftware-Seite nicht erreichbar: {error}"
+    },
+    "firmware_no_version": {
+      "message": "Auf Sonys Systemsoftware-Seite wurde keine Versionsnummer gefunden."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "PlayStation Network (optional)",
+        "description": "Die Steuerung bleibt lokal. Mit der PSN-Cloud zeigt HA zusätzlich das laufende Spiel mit Cover, Online-Status, Trophäen, Avatar und PS Plus.\n\nZum Einschalten oder Erneuern: bei playstation.com anmelden, {sso_url} öffnen und den Wert hinter „npsso“ (oder die ganze Zeile) einfügen. Gespeichert wird nur ein Erneuerungs-Token.",
+        "data": {
+          "npsso": "NPSSO-Token",
+          "disable_cloud": "PSN-Cloud ausschalten"
+        }
+      }
+    },
+    "error": {
+      "invalid_npsso": "Sony hat das NPSSO-Token abgelehnt. Bei playstation.com neu anmelden und ein frisches kopieren.",
+      "psn_unreachable": "Sony war zum Nachschlagen der Konto-ID nicht erreichbar. Nochmal versuchen oder die ID eintragen."
+    }
+  },
+  "issues": {
+    "psn_token_expired": {
+      "title": "{name}: PSN-Anmeldung abgelaufen",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "PSN-Anmeldung erneuern",
+            "description": "Spiel, Trophäen und Online-Status von {name} brauchen eine neue Anmeldung. Bei playstation.com anmelden, {sso_url} öffnen und den Wert hinter „npsso“ einfügen.",
+            "data": {
+              "npsso": "NPSSO-Token"
+            }
+          }
+        },
+        "error": {
+          "invalid_npsso": "Sony hat das NPSSO-Token abgelehnt. Bei playstation.com neu anmelden und ein frisches kopieren.",
+          "psn_unreachable": "Sony war zum Nachschlagen der Konto-ID nicht erreichbar. Nochmal versuchen oder die ID eintragen."
+        },
+        "abort": {
+          "entry_missing": "Die PS5 ist nicht mehr eingerichtet."
+        }
+      }
+    },
+    "psn_token_expiring": {
+      "title": "{name}: PSN-Anmeldung läuft bald ab",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "PSN-Anmeldung erneuern",
+            "description": "Spiel, Trophäen und Online-Status von {name} brauchen eine neue Anmeldung. Bei playstation.com anmelden, {sso_url} öffnen und den Wert hinter „npsso“ einfügen.",
+            "data": {
+              "npsso": "NPSSO-Token"
+            }
+          }
+        },
+        "error": {
+          "invalid_npsso": "Sony hat das NPSSO-Token abgelehnt. Bei playstation.com neu anmelden und ein frisches kopieren.",
+          "psn_unreachable": "Sony war zum Nachschlagen der Konto-ID nicht erreichbar. Nochmal versuchen oder die ID eintragen."
+        },
+        "abort": {
+          "entry_missing": "Die PS5 ist nicht mehr eingerichtet."
+        }
+      }
+    }
+  }
+}

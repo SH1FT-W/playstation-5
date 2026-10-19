@@ -1,0 +1,167 @@
+{
+  "$comment": "Content of the README card pictures. Render with sh1ft-w.github.io/theme/v1/readme-images: node render.mjs <this repo> cards (only cards: the title image is not made by render.mjs). The title image comes from docs/readme-title.html (photo docs/images/readme-photo.webp, AI-generated, the TV card shows made-up values), rendered with headless Chrome at 1280x640, scale 2, ?theme=light and ?theme=dark.",
+  "colors": {
+    "light": {
+      "bg": "#F4F6FA",
+      "bg2": "#EAEEF5",
+      "ink": "#0E1320",
+      "ink2": "#4A5468",
+      "ink3": "#7C869A",
+      "accentText": "#005BB0",
+      "accent": "#0070D1",
+      "accent2": "#5AA6FF",
+      "glow1": "rgba(0,112,209,0.16)",
+      "glow2": "rgba(90,166,255,0.14)",
+      "frame": "rgba(14,30,60,0.10)",
+      "pillBg": "#ffffff",
+      "pillLine": "rgba(14,30,60,0.08)",
+      "win": "#06090f",
+      "bar": ""
+    },
+    "dark": {
+      "bg": "#070A10",
+      "bg2": "#0C111A",
+      "ink": "#EEF2F8",
+      "ink2": "rgba(205,215,232,0.84)",
+      "ink3": "rgba(205,215,232,0.52)",
+      "accentText": "#5AA6FF",
+      "accent": "#2E8CFF",
+      "accent2": "#5AA6FF",
+      "glow1": "rgba(0,112,209,0.24)",
+      "glow2": "rgba(90,166,255,0.10)",
+      "frame": "rgba(255,255,255,0.10)",
+      "pillBg": "rgba(255,255,255,0.06)",
+      "pillLine": "rgba(255,255,255,0.10)",
+      "win": "#06090f",
+      "bar": ""
+    }
+  },
+  "fonts": {
+    "display": "\"Archivo\", -apple-system, system-ui, sans-serif",
+    "body": "\"Inter\", -apple-system, system-ui, sans-serif",
+    "mono": "\"JetBrains Mono\", ui-monospace, Menlo, monospace",
+    "google": "https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
+  },
+  "cards": {
+    "new": [
+      {
+        "icon": "power-sleep",
+        "title": "Off stays off",
+        "ver": "26.10.2",
+        "text": "If the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing off. Fully switched off meanwhile? It stops at once."
+      },
+      {
+        "icon": "shield-lock-outline",
+        "title": "Diagnostics without secrets",
+        "ver": "26.10.2",
+        "text": "Pairing keys, PSN account ID, refresh token, IP and MAC address are redacted from the diagnostics download."
+      },
+      {
+        "icon": "rocket-launch-outline",
+        "title": "Starts without Sony",
+        "ver": "26.10.2",
+        "text": "Setup no longer waits for the PSN cloud or the update page, both load in the background. Re-pairing keeps the cloud settings."
+      },
+      {
+        "icon": "calendar-outline",
+        "title": "Calendar versions",
+        "ver": "26.10.1",
+        "text": "Year, month and the release of that month: 26.10.2 is the second release of October 2026. The jump from 1.2.3 is intended, updates show up as usual."
+      }
+    ],
+    "features": [
+      {
+        "icon": "power",
+        "title": "Wake up and rest mode",
+        "text": "A media player and a power switch. Wake-up takes about five seconds, rest mode goes over a short Remote Play session."
+      },
+      {
+        "icon": "sony-playstation",
+        "title": "On, rest mode or off",
+        "text": "A status sensor tells all three apart, every five seconds, without pairing. A silent console counts as off, not as an error."
+      },
+      {
+        "icon": "gamepad-variant-outline",
+        "title": "Current game",
+        "text": "Name, title ID and cover in the game sensor, the media player and an image entity (with the optional PSN cloud)."
+      },
+      {
+        "icon": "trophy-outline",
+        "title": "Trophies and profile",
+        "text": "Trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID."
+      },
+      {
+        "icon": "update",
+        "title": "System software",
+        "text": "An update entity compares the installed version with the latest one on Sony's update page, with release notes."
+      },
+      {
+        "icon": "magnify",
+        "title": "Finds itself",
+        "text": "Discovered by DHCP host name or Sony MAC address, follows IP changes and pairs with the 8-digit PIN from the console."
+      },
+      {
+        "icon": "key-outline",
+        "title": "Your login stays local",
+        "text": "NPSSO and refresh token stay in Home Assistant and only go to Sony's login servers. A repair asks for a new token 7 days before expiry."
+      },
+      {
+        "icon": "translate",
+        "title": "English and German",
+        "text": "Entity names, setup, repairs and error messages in both languages. Self-assessed against the Integration Quality Scale."
+      }
+    ],
+    "entities": [
+      {
+        "icon": "television-play",
+        "title": "Media player",
+        "text": "media_player.playstation_5: playing (with game and cover), on or off; switch on and off."
+      },
+      {
+        "icon": "toggle-switch-outline",
+        "title": "Power switch",
+        "text": "switch.playstation_5_power: on = running, off = rest mode. Handy for automations, for example switching the TV input."
+      },
+      {
+        "icon": "information-outline",
+        "title": "Status and game",
+        "text": "status (on, rest mode, off, attribute changing during a command) and game (attribute title_id)."
+      },
+      {
+        "icon": "update",
+        "title": "System software",
+        "text": "update.playstation_5_system_software: installed against Sony's latest version. The PS5 installs it itself in rest mode."
+      },
+      {
+        "icon": "trophy-outline",
+        "title": "PSN cloud sensors",
+        "text": "online_status, last_online, online_id, trophy_level, trophy_level_progress, platinum to bronze trophies, psn_login_expires."
+      },
+      {
+        "icon": "image-outline",
+        "title": "Images and PS Plus",
+        "text": "game_cover and avatar as image entities, playstation_plus as a binary sensor. Only with the optional cloud."
+      }
+    ],
+    "how": {
+      "cols": 3,
+      "items": [
+        {
+          "icon": "radar",
+          "title": "DDP, UDP 9302",
+          "text": "Status and wake-up, the way the PS App finds the console at home. Every 5 seconds."
+        },
+        {
+          "icon": "remote",
+          "title": "Remote Play, TCP 9295",
+          "text": "One-time pairing with the PIN, then a short session that only sends rest mode."
+        },
+        {
+          "icon": "cloud-outline",
+          "title": "PSN, optional",
+          "text": "Game, trophies and profile from Sony once a minute. Control never goes through the cloud."
+        }
+      ]
+    }
+  }
+}

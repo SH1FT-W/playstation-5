@@ -1,0 +1,73 @@
+{
+  "entity": {
+    "switch": {
+      "power": {
+        "default": "mdi:sony-playstation",
+        "state": {
+          "off": "mdi:power-sleep"
+        }
+      }
+    },
+    "sensor": {
+      "status": {
+        "default": "mdi:sony-playstation",
+        "state": {
+          "rest": "mdi:power-sleep",
+          "off": "mdi:power-off"
+        }
+      },
+      "game": {
+        "default": "mdi:gamepad-variant"
+      },
+      "online_status": {
+        "default": "mdi:account-circle",
+        "state": {
+          "offline": "mdi:account-off"
+        }
+      },
+      "last_online": {
+        "default": "mdi:clock-outline"
+      },
+      "trophy_level": {
+        "default": "mdi:trophy"
+      },
+      "trophy_progress": {
+        "default": "mdi:trophy-outline"
+      },
+      "trophies_platinum": {
+        "default": "mdi:trophy-award"
+      },
+      "trophies_gold": {
+        "default": "mdi:trophy"
+      },
+      "trophies_silver": {
+        "default": "mdi:trophy-variant"
+      },
+      "trophies_bronze": {
+        "default": "mdi:trophy-variant-outline"
+      },
+      "online_id": {
+        "default": "mdi:account"
+      },
+      "psn_token_expires": {
+        "default": "mdi:key-chain"
+      }
+    },
+    "binary_sensor": {
+      "ps_plus": {
+        "default": "mdi:plus-circle",
+        "state": {
+          "off": "mdi:plus-circle-outline"
+        }
+      }
+    },
+    "image": {
+      "game_cover": {
+        "default": "mdi:gamepad-variant"
+      },
+      "avatar": {
+        "default": "mdi:account-circle"
+      }
+    }
+  }
+}

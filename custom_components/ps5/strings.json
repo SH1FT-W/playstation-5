@@ -1,0 +1,206 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "PlayStation 5",
+        "description": "Select your PS5 or enter its IP address. It must be on or in rest mode.",
+        "data": {
+          "host": "PS5"
+        },
+        "data_description": {
+          "host": "Found in your network, or enter an IP address."
+        }
+      },
+      "link": {
+        "title": "Link {name}",
+        "description": "On the PS5 open Settings → System → Remote Play → Link Device and enter the 8-digit PIN.\n\nPSN account ID: enter it if you know it (numeric). Otherwise leave it empty and paste an NPSSO token instead: sign in at playstation.com, then open {sso_url} and copy the value after \"npsso\". The token is only used once to look up the ID and is not stored.",
+        "data": {
+          "account_id": "PSN account ID",
+          "npsso": "NPSSO token (instead of the account ID)",
+          "pin": "PIN"
+        },
+        "data_description": {
+          "npsso": "64 characters from {sso_url} after signing in at playstation.com."
+        }
+      },
+      "reconfigure": {
+        "title": "PlayStation 5",
+        "data": {
+          "host": "IP address"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "The PS5 does not answer. Is it on or in rest mode?",
+      "not_linking": "The PS5 is not waiting for a link. Open “Link Device” on the PS5 first.",
+      "link_failed": "Linking failed: wrong PIN or account ID.",
+      "invalid_pin": "The PIN has 8 digits.",
+      "invalid_account": "Enter the numeric PSN account ID.",
+      "invalid_npsso": "Sony rejected the NPSSO token. Sign in again at playstation.com and copy a fresh one.",
+      "psn_unreachable": "Sony could not be reached to look up the account ID. Try again or enter the ID.",
+      "account_missing": "Enter the PSN account ID or an NPSSO token."
+    },
+    "abort": {
+      "already_configured": "This PS5 is already set up.",
+      "cannot_connect": "The PS5 does not answer.",
+      "reauth_successful": "PS5 linked again.",
+      "reconfigure_successful": "Settings saved.",
+      "wrong_device": "A different PS5 answers at this address."
+    }
+  },
+  "entity": {
+    "switch": {
+      "power": {
+        "name": "Power"
+      }
+    },
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "on": "On",
+          "rest": "Rest mode",
+          "off": "Off"
+        }
+      },
+      "game": {
+        "name": "Game"
+      },
+      "online_status": {
+        "name": "Online status",
+        "state": {
+          "offline": "Offline",
+          "availabletoplay": "Online",
+          "availabletocommunicate": "Online (app)",
+          "busy": "Busy"
+        }
+      },
+      "last_online": {
+        "name": "Last online"
+      },
+      "trophy_level": {
+        "name": "Trophy level"
+      },
+      "trophy_progress": {
+        "name": "Trophy level progress"
+      },
+      "trophies_platinum": {
+        "name": "Platinum trophies"
+      },
+      "trophies_gold": {
+        "name": "Gold trophies"
+      },
+      "trophies_silver": {
+        "name": "Silver trophies"
+      },
+      "trophies_bronze": {
+        "name": "Bronze trophies"
+      },
+      "online_id": {
+        "name": "Online ID"
+      },
+      "psn_token_expires": {
+        "name": "PSN login expires"
+      }
+    },
+    "binary_sensor": {
+      "ps_plus": {
+        "name": "PlayStation Plus"
+      }
+    },
+    "image": {
+      "game_cover": {
+        "name": "Game cover"
+      },
+      "avatar": {
+        "name": "Avatar"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "System software"
+      }
+    }
+  },
+  "exceptions": {
+    "command_failed": {
+      "message": "The PS5 did not accept the command: {error}"
+    },
+    "not_linked": {
+      "message": "The PS5 no longer knows this link. Link it again."
+    },
+    "psn_expired": {
+      "message": "PSN login expired – renew it under Repairs."
+    },
+    "psn_unreachable": {
+      "message": "PlayStation Network not reachable: {error}"
+    },
+    "firmware_unreachable": {
+      "message": "Sony's system software page not reachable: {error}"
+    },
+    "firmware_no_version": {
+      "message": "No version number found on Sony's system software page."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "PlayStation Network (optional)",
+        "description": "Control stays local. With the PSN cloud HA also shows the running game with cover, online status, trophies, avatar and PS Plus.\n\nTo switch it on or renew it: sign in at playstation.com, open {sso_url} and paste the value after \"npsso\" (or the whole line). Only a renewal token is stored.",
+        "data": {
+          "npsso": "NPSSO token",
+          "disable_cloud": "Switch off PSN cloud"
+        }
+      }
+    },
+    "error": {
+      "invalid_npsso": "Sony rejected the NPSSO token. Sign in again at playstation.com and copy a fresh one.",
+      "psn_unreachable": "Sony could not be reached to look up the account ID. Try again or enter the ID."
+    }
+  },
+  "issues": {
+    "psn_token_expired": {
+      "title": "{name}: PSN login expired",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Renew PSN login",
+            "description": "Game, trophies and online status of {name} need a new login. Sign in at playstation.com, open {sso_url} and paste the value after \"npsso\".",
+            "data": {
+              "npsso": "NPSSO token"
+            }
+          }
+        },
+        "error": {
+          "invalid_npsso": "Sony rejected the NPSSO token. Sign in again at playstation.com and copy a fresh one.",
+          "psn_unreachable": "Sony could not be reached to look up the account ID. Try again or enter the ID."
+        },
+        "abort": {
+          "entry_missing": "The PS5 is no longer set up."
+        }
+      }
+    },
+    "psn_token_expiring": {
+      "title": "{name}: PSN login expires soon",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Renew PSN login",
+            "description": "Game, trophies and online status of {name} need a new login. Sign in at playstation.com, open {sso_url} and paste the value after \"npsso\".",
+            "data": {
+              "npsso": "NPSSO token"
+            }
+          }
+        },
+        "error": {
+          "invalid_npsso": "Sony rejected the NPSSO token. Sign in again at playstation.com and copy a fresh one.",
+          "psn_unreachable": "Sony could not be reached to look up the account ID. Try again or enter the ID."
+        },
+        "abort": {
+          "entry_missing": "The PS5 is no longer set up."
+        }
+      }
+    }
+  }
+}

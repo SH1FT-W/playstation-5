@@ -1,0 +1,34 @@
+PlayStation 5 for Home Assistant
+Copyright 2026 SH1FT-W
+
+This program is free software: you can redistribute it and/or modify it under the terms of
+the GNU General Public License version 3 as published by the Free Software Foundation.
+It is distributed WITHOUT ANY WARRANTY. See LICENSE for the full text.
+
+Third-party material
+--------------------
+
+custom_components/ps5/keys.py and the Remote Play parts of custom_components/ps5/protocol.py
+  The key tables (HMAC key, registration key tables) are taken from pyremoteplay, and the
+  wake-up, pairing and standby handshake is re-implemented after it, compared byte for byte
+  against pyremoteplay 0.7.6.
+  pyremoteplay: https://github.com/ktnrg45/pyremoteplay
+  Copyright (c) ktnrg45, GNU General Public License v3.0
+  pyremoteplay in turn derives these tables and the protocol from Chiaki
+  (https://git.sr.ht/~thestr4ng3r/chiaki), an open source PlayStation Remote Play client.
+  Because of this, the whole integration is licensed under the GPL v3.
+
+custom_components/ps5/psn.py
+  The PlayStation Network sign-in (NPSSO -> authorization code -> token) uses the same public
+  client ID, redirect URI and scopes of the official PlayStation App that PSNAWP uses.
+  No code is copied from PSNAWP.
+  PSNAWP: https://github.com/isFakeAccount/psnawp
+  Copyright (c) isFakeAccount, MIT License
+
+Trademarks
+----------
+
+"PlayStation", "PS5" and "PlayStation Network" are registered trademarks or trademarks of
+Sony Interactive Entertainment Inc. This project is independent and is not affiliated with,
+endorsed by or sponsored by Sony Interactive Entertainment, Sony Group Corporation,
+Home Assistant or Nabu Casa.

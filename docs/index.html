@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-de="PlayStation 5 für Home Assistant">PlayStation 5 for Home Assistant</title>
+<script src="https://sh1ft-w.github.io/bar.js" data-project="ps5" defer></script>
+<meta name="description" content="PlayStation 5 brings your PS5 into Home Assistant, locally: status, wake-up and rest mode without cloud, MQTT or extra app. Optional PSN cloud for the current game, trophies and online status.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F4F6FA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070A10" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="PlayStation 5 for Home Assistant">
+<meta property="og:description" content="Status, wake-up and rest mode for the PS5, fully local. Game and trophies optional.">
+<meta property="og:image" content="https://sh1ft-w.github.io/ps5/logo.png">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Shared SH1FT-W design (tokens, glass navigation, light/dark, DE/EN, reveal) -->
+<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v1/theme.css">
+<script src="https://sh1ft-w.github.io/theme/v1/theme.js"></script>
+<style>
+/* PS5-Palette: kühles Weiß bei Tag, tiefes Nachtblau bei Nacht, ein Akzent in PlayStation-Blau */
+:root {
+  --accent: #0070D1; --accent-ink: #005BB0; --on-accent: #FFFFFF;
+  --blue: #0070D1; --blue-ink: #005BB0; --blue-tint: rgba(0,112,209,0.10); --blue-glow: rgba(0,112,209,0.36);
+  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --display: "Archivo", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --bg: #F4F6FA; --bg-2: #EAEEF5; --card: #FFFFFF; --card-2: #F2F5FA;
+  --ink: #0E1320; --ink-2: #4A5468; --ink-3: rgba(14,19,32,0.52);
+  --line: rgba(14,30,60,0.10); --chip: rgba(14,40,90,0.06);
+  --glass: rgba(250,252,255,0.7); --glass-line: rgba(255,255,255,0.75);
+  --shadow: 0 1px 2px rgba(10,25,50,0.05), 0 12px 32px -14px rgba(10,25,50,0.22);
+  --shadow-lg: 0 2px 6px rgba(10,25,50,0.05), 0 48px 100px -36px rgba(10,25,50,0.4);
+  --radius: 26px; --radius-lg: 36px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --accent: #2E8CFF; --accent-ink: #5AA6FF; --on-accent: #FFFFFF;
+  --blue-ink: #5AA6FF; --blue-tint: rgba(46,140,255,0.15); --blue-glow: rgba(0,112,209,0.4);
+  --bg: #070A10; --bg-2: #0C111A; --card: #121825; --card-2: #182030;
+  --ink: #EEF2F8; --ink-2: rgba(205,215,232,0.84); --ink-3: rgba(205,215,232,0.52);
+  --line: rgba(238,242,248,0.1); --chip: rgba(238,242,248,0.07);
+  --glass: rgba(18,24,37,0.62); --glass-line: rgba(255,255,255,0.08);
+  --shadow: 0 14px 34px -16px rgba(0,0,0,0.6); --shadow-lg: 0 48px 100px -36px rgba(0,0,0,0.85);
+} }
+:root[data-theme="dark"] {
+  --accent: #2E8CFF; --accent-ink: #5AA6FF; --on-accent: #FFFFFF;
+  --blue-ink: #5AA6FF; --blue-tint: rgba(46,140,255,0.15); --blue-glow: rgba(0,112,209,0.4);
+  --bg: #070A10; --bg-2: #0C111A; --card: #121825; --card-2: #182030;
+  --ink: #EEF2F8; --ink-2: rgba(205,215,232,0.84); --ink-3: rgba(205,215,232,0.52);
+  --line: rgba(238,242,248,0.1); --chip: rgba(238,242,248,0.07);
+  --glass: rgba(18,24,37,0.62); --glass-line: rgba(255,255,255,0.08);
+  --shadow: 0 14px 34px -16px rgba(0,0,0,0.6); --shadow-lg: 0 48px 100px -36px rgba(0,0,0,0.85);
+}
+
+body { background: var(--bg); color: var(--ink); }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.narrow { max-width: 780px; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.center { text-align: center; }
+.center .lead { margin-left: auto; margin-right: auto; max-width: 680px; }
+code, .k { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.brand { font-family: var(--display); font-weight: 800; }
+.brand img { border-radius: 8px; }
+.nav .brand { white-space: nowrap; flex: none; }
+
+/* Knöpfe */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 24px; border-radius: 999px;
+  font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; background: var(--blue); color: var(--on-accent); border: 0; cursor: pointer;
+  box-shadow: 0 12px 28px -12px var(--blue-glow); transition: transform .2s ease, filter .2s ease;
+}
+.btn:hover { text-decoration: none; filter: brightness(1.08); transform: translateY(-1px); }
+.btn.ghost { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.btn.small { height: 36px; padding: 0 16px; font-size: 14px; }
+
+/* Schrift */
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 18px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 4px var(--blue-tint); }
+h1, h2, h3 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 800; text-wrap: balance; }
+h1 { font-size: clamp(44px, 8vw, 100px); line-height: 0.96; letter-spacing: -0.04em; font-weight: 900; }
+h1 em, h2 em { font-style: normal; color: var(--blue); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) h1 em, :root:not([data-theme="light"]) h2 em { color: var(--accent); } }
+:root[data-theme="dark"] h1 em, :root[data-theme="dark"] h2 em { color: var(--accent); }
+h2 { font-size: clamp(34px, 5vw, 60px); line-height: 1.03; letter-spacing: -0.035em; }
+h3 { font-size: 20px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 700; }
+.lead { font-size: clamp(18px, 2vw, 22px); line-height: 1.5; color: var(--ink-2); margin: 22px 0 0; }
+.lead strong { color: var(--ink); font-weight: 600; }
+
+section { padding: clamp(72px, 9vw, 120px) 0; position: relative; }
+section.tint { background: var(--bg-2); }
+.head { margin-bottom: clamp(36px, 5vw, 60px); }
+.cap { margin-top: 20px; font-size: 15px; color: var(--ink-3); text-align: center; }
+
+/* Hero */
+.hero { padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 8vw, 104px); text-align: center; overflow: hidden; }
+.hero .glow { position: absolute; inset: -20% -10% auto; height: 90%; pointer-events: none;
+  background: radial-gradient(40% 36% at 30% 30%, rgba(0,112,209,0.2), transparent 70%), radial-gradient(36% 34% at 72% 24%, rgba(90,166,255,0.18), transparent 70%);
+  filter: blur(50px); }
+.hero .wrap { position: relative; }
+.hero .lead { max-width: 660px; margin-left: auto; margin-right: auto; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
+.meta { margin-top: 22px; font-size: 14px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-weight: 600; color: var(--ink-2); font-size: 13px; }
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); display: inline-block; }
+
+/* Bühne: stilisierte Konsole mit Karten (bleibt in beiden Themes dunkel) */
+.stage { position: relative; margin: clamp(48px, 7vw, 84px) auto 0; max-width: 1000px; border-radius: var(--radius-lg); padding: clamp(28px, 5vw, 56px) clamp(16px, 4vw, 48px);
+  background: radial-gradient(ellipse at 50% 0%, #0d2440, #06090f 70%); box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255,255,255,0.06); color: #eef2f8; }
+/* Bild im Hero: KI-erzeugtes Foto, die Karte im TV zeigt erfundene Werte */
+.photo { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 45%; border-radius: 22px; box-shadow: 0 30px 60px -24px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.06); }
+.cards { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; margin-top: clamp(20px, 3vw, 28px); text-align: left; }
+.hc { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 20px 22px; min-width: 0; }
+.hc .top { display: flex; align-items: center; gap: 12px; }
+.hc .ico { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(0,112,209,0.25); color: #5aa6ff; }
+.hc .ico svg { width: 20px; height: 20px; }
+.hc .name { font-weight: 600; font-size: 15px; }
+.hc .state { font-size: 13px; color: #93a0b5; }
+.hc .power { margin-left: auto; width: 42px; height: 24px; border-radius: 999px; background: #0070d1; position: relative; flex: none; }
+.hc .power::after { content: ""; position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+.game { display: flex; gap: 14px; align-items: center; margin-top: 18px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.04); }
+.cover { flex: none; width: 64px; height: 64px; border-radius: 12px; background: radial-gradient(circle at 30% 25%, #ffd36b, transparent 40%), linear-gradient(135deg, #1b4fd6, #6a1fb8 55%, #0b0f2a); position: relative; overflow: hidden; }
+.cover::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 14%; height: 18%; border-radius: 50% 50% 0 0; background: rgba(5,8,20,0.75); }
+.game b { display: block; font-size: 15px; font-weight: 600; }
+.game small { display: block; font: 500 12px/1.4 var(--mono); color: #93a0b5; margin-top: 3px; }
+.trophies { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.trophies span { font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: rgba(255,255,255,0.06); color: #c4cedd; display: inline-flex; gap: 6px; align-items: center; }
+.trophies i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.rows { display: grid; gap: 0; margin-top: 4px; }
+.rows div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.07); font-size: 14px; }
+.rows div:first-child { border-top: 0; }
+.rows span { color: #93a0b5; min-width: 0; }
+.rows b { font-weight: 500; text-align: right; color: #eef2f8; overflow-wrap: anywhere; }
+.rows b.hot { color: #5aa6ff; }
+.fict { margin-top: 16px; font-size: 12px; color: #7d889b; text-align: center; }
+
+/* Bento: Gerade neu */
+.bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.b { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 28px 28px; min-width: 0; }
+.b .tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); background: var(--blue-tint); padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+.b h3 { margin-bottom: 8px; }
+.b p { color: var(--ink-2); font-size: 16px; }
+.b code { font-size: 14px; background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
+.b.s4 { grid-column: span 4; } .b.s6 { grid-column: span 6; } .b.s8 { grid-column: span 8; }
+
+/* Funktionen */
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tile { background: var(--card); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); min-width: 0; }
+.tile h3 { margin-bottom: 8px; }
+.tile p { color: var(--ink-2); font-size: 16px; }
+.tile .ico { width: 46px; height: 46px; border-radius: 15px; background: var(--blue-tint); color: var(--accent-ink); display: grid; place-items: center; margin-bottom: 18px; }
+.tile .ico svg { width: 23px; height: 23px; }
+
+/* Cloud-Illustration */
+.split { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(36px, 6vw, 80px); align-items: center; }
+.points { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 16px; }
+.points li { display: grid; gap: 2px; }
+.points b { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--ink); }
+.points span { color: var(--ink-2); font-size: 16px; }
+.prof { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: clamp(22px, 4vw, 36px); min-width: 0; }
+.prof-head { display: flex; align-items: center; gap: 14px; }
+.avatar { flex: none; width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, #fff 0 18%, transparent 19%), radial-gradient(circle at 50% 100%, #fff 0 38%, transparent 39%), linear-gradient(135deg, #0070d1, #5aa6ff); }
+.prof-head b { font-family: var(--display); font-size: 19px; display: block; }
+.prof-head small { color: var(--ink-3); font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.prof-head small i { width: 8px; height: 8px; border-radius: 50%; background: #2fbf71; display: inline-block; }
+.lvl { margin-top: 24px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.lvl b { font-family: var(--display); font-size: 40px; letter-spacing: -0.03em; }
+.lvl span { color: var(--ink-3); font-size: 14px; }
+.track { height: 8px; border-radius: 4px; background: var(--chip); margin-top: 10px; position: relative; overflow: hidden; }
+.track i { position: absolute; inset: 0 auto 0 0; width: 64%; border-radius: 4px; background: var(--blue); }
+.tro { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
+.tro div { background: var(--card-2); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+.tro span { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-3); }
+.tro span i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.tro b { font-weight: 600; font-size: 20px; font-family: var(--display); }
+.plat { background: #9fb3d1; } .gold { background: #e3b341; } .silv { background: #b8c0cc; } .bron { background: #c27c4a; }
+.prof-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+.prof-foot b { color: var(--ink); font-weight: 600; }
+
+/* Entitäten-Tabelle */
+.tbl { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; font-size: 15px; }
+.tbl th, .tbl td { text-align: left; padding: 14px 18px; border-top: 1px solid var(--line); vertical-align: top; }
+.tbl thead th { border-top: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); background: var(--card-2); }
+.tbl td:first-child { font-weight: 600; white-space: nowrap; }
+.tbl code { font-size: 13px; background: var(--chip); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.tbl td:last-child { color: var(--ink-2); }
+.tbl .grp td { background: var(--card-2); font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); padding: 10px 18px; }
+
+/* Wie es funktioniert */
+.flow { display: grid; gap: 12px; max-width: 900px; margin: 0 auto; }
+.lane { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; background: var(--card); border-radius: 22px; box-shadow: var(--shadow); padding: 18px 22px; }
+.lane .end b { display: block; font-family: var(--display); font-size: 16px; }
+.lane .end span { font-size: 14px; color: var(--ink-2); }
+.lane .end.r { text-align: right; }
+.arrow { display: grid; justify-items: center; gap: 4px; font: 500 12px/1.2 var(--mono); color: var(--accent-ink); text-align: center; }
+.arrow svg { width: 120px; height: 14px; }
+
+/* Installation */
+.install { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+.panel { background: var(--card); border-radius: var(--radius); padding: clamp(26px, 4vw, 42px); box-shadow: var(--shadow); min-width: 0; }
+.panel h3 { margin-bottom: 6px; }
+.panel code { font-size: 14px; background: var(--chip); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.repo { margin-top: 10px; display: flex; align-items: center; gap: 8px; background: var(--chip); border-radius: 18px; padding: 8px 8px 8px 18px; }
+.repo code { flex: 1; min-width: 0; font-size: 15px; background: none; padding: 0; color: var(--ink); overflow-wrap: anywhere; }
+.copy { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--card); color: var(--ink); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+.steps { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 20px; counter-reset: s; }
+.steps li { position: relative; padding-left: 50px; color: var(--ink-2); }
+.steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: -3px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-tint); color: var(--accent-ink); font-weight: 700; font-size: 15px; }
+.steps li b { color: var(--ink); font-weight: 600; }
+.req { list-style: none; padding: 0; margin: 20px 0 0; }
+.req li { display: flex; gap: 14px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); font-size: 16px; }
+.req li:first-child { border-top: 0; padding-top: 6px; }
+.req .name { color: var(--ink); font-weight: 600; flex: 1; min-width: 0; }
+.tg { flex: none; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--blue-tint); color: var(--accent-ink); }
+.tg.opt { background: var(--chip); color: var(--ink-3); }
+.note { margin-top: 20px; font-size: 14px; color: var(--ink-3); }
+.full { grid-column: 1 / -1; }
+.shield { display: flex; gap: 16px; align-items: flex-start; }
+.shield .ico { flex: none; width: 46px; height: 46px; border-radius: 15px; background: var(--blue-tint); color: var(--accent-ink); display: grid; place-items: center; }
+.shield .ico svg { width: 23px; height: 23px; }
+
+/* FAQ */
+.faq { display: grid; gap: 10px; }
+.faq details { background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 0 22px; }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 0; font-family: var(--display); font-weight: 700; font-size: 17px; display: flex; gap: 12px; align-items: center; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; margin-left: auto; font-size: 22px; color: var(--accent-ink); font-weight: 600; }
+.faq details[open] summary::after { content: "\2212"; }
+.faq details p { padding: 0 0 18px; color: var(--ink-2); font-size: 16px; }
+.faq code { font-size: 13px; background: var(--chip); padding: 2px 6px; border-radius: 6px; }
+
+/* Schluss, Fuß */
+.finale { text-align: center; }
+.finale h2 { font-size: clamp(40px, 6.5vw, 84px); }
+footer { border-top: 1px solid var(--line); padding: 44px 0 56px; font-size: 14px; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: center; }
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 26px; }
+footer nav a { color: var(--ink-2); font-weight: 500; }
+footer .fine { flex-basis: 100%; line-height: 1.6; }
+
+@media (max-width: 960px) {
+  .split, .install, .cards { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .b.s4, .b.s8 { grid-column: span 6; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  :root { --radius: 22px; --radius-lg: 28px; }
+  .nav { padding: 0 8px 0 14px; }
+  .nav .btn { margin-left: auto; }
+  .nav .brand { font-size: 15px; gap: 8px; }
+  .grid3 { grid-template-columns: 1fr; }
+  .b.s4, .b.s6, .b.s8 { grid-column: span 12; }
+  .tile, .b { padding: 24px; }
+  .panel { padding: 24px 20px; }
+  .repo { flex-wrap: wrap; padding: 12px 14px; gap: 10px; }
+  .repo code { flex-basis: 100%; font-size: clamp(12px, 3.4vw, 14px); }
+  .copy { margin-left: auto; }
+  .tro { grid-template-columns: 1fr 1fr; }
+  .lane { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+  .lane .end.r { text-align: left; }
+  .arrow { justify-items: start; text-align: left; }
+  .arrow svg { width: 80px; }
+  .tbl, .tbl tbody, .tbl tr, .tbl td { display: block; }
+  .tbl thead { display: none; }
+  .tbl tr { border-top: 1px solid var(--line); padding: 12px 16px; }
+  .tbl tr:first-child { border-top: 0; }
+  .tbl td { border: 0; padding: 2px 0; }
+  .tbl .grp td { padding: 2px 0; background: none; }
+  .shield { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="navwrap">
+  <nav class="nav" aria-label="Site">
+    <a class="brand" href="#top"><img src="logo.png" alt="">PlayStation 5</a>
+    <div class="nav-links">
+      <a href="#new"><span class="en">New</span><span class="de">Neu</span></a>
+      <a href="#features"><span class="en">Features</span><span class="de">Funktionen</span></a>
+      <a href="#cloud" class="opt"><span class="en">PSN cloud</span><span class="de">PSN-Cloud</span></a>
+      <a href="#entities"><span class="en">Entities</span><span class="de">Entitäten</span></a>
+      <a href="#faq" class="opt"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></a>
+      <a href="https://github.com/SH1FT-W/ps5">GitHub</a>
+    </div>
+    <button class="iconbtn" id="theme" type="button" aria-label="Light or dark">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-l="de">DE</button><button type="button" data-l="en">EN</button></div>
+    <a class="btn small" href="#install"><span class="en">Install</span><span class="de">Installieren</span></a>
+  </nav>
+</div>
+
+<section class="hero" id="top">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow reveal"><span class="en">The PS5 in Home Assistant</span><span class="de">Die PS5 in Home Assistant</span></p>
+    <h1 class="reveal d1"><span class="en">Your PS5,<br><em>fully local.</em></span><span class="de">Deine PS5,<br><em>ganz lokal.</em></span></h1>
+    <p class="lead reveal d2"><span class="en">PlayStation 5 talks to your console the way the PS App does at home: <strong>status, wake-up and rest mode</strong> without cloud, MQTT or an extra app. The current game, trophies and online status come <strong>optionally</strong> from the PSN cloud.</span><span class="de">PlayStation 5 spricht mit deiner Konsole wie die PS-App im Heimnetz: <strong>Status, Aufwecken und Ruhemodus</strong> ohne Cloud, MQTT oder Zusatz-App. Laufendes Spiel, Trophäen und Online-Status kommen <strong>auf Wunsch</strong> aus der PSN-Cloud.</span></p>
+    <div class="cta reveal d3">
+      <a class="btn" href="#install"><span class="en">Install with HACS</span><span class="de">Mit HACS installieren</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/ps5#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
+    </div>
+    <p class="meta reveal d3">
+      <span class="pill"><i></i><span id="ps5-version">Version 26.10.2</span></span>
+      <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; GPLv3</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; GPLv3</span>
+    </p>
+
+    <div class="stage reveal d3" role="img" aria-label="An AI-generated picture of a PS5 with a DualSense controller on a TV board; the TV shows a status card with PlayStation 5, On, Playing, the made-up game Starfall Odyssey and trophy level 287. Below it a media player card and a list of entity values. All values are made up.">
+      <img class="photo" src="images/readme-photo.webp" width="966" height="887" alt="">
+      <div class="cards">
+        <div class="hc">
+          <div class="top">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6l-.6 6.1A3 3 0 0 0 5 18c1 0 1.9-.5 2.4-1.3L8.5 15h7l1.1 1.7A2.9 2.9 0 0 0 19 18a3 3 0 0 0 2.9-3.3l-.6-6.1A4 4 0 0 0 17.3 5z"/></svg></span>
+            <div><div class="name">PlayStation 5</div><div class="state"><span class="en">On &middot; playing</span><span class="de">An &middot; spielt</span></div></div>
+            <span class="power" aria-hidden="true"></span>
+          </div>
+          <div class="game"><span class="cover" aria-hidden="true"></span><div><b>Starfall Odyssey</b><small>PPSA01234</small></div></div>
+          <div class="trophies"><span><i class="plat"></i>3</span><span><i class="gold"></i>41</span><span><i class="silv"></i>118</span><span><i class="bron"></i>506</span></div>
+        </div>
+        <div class="hc">
+          <div class="rows">
+            <div><span>Status</span><b class="hot"><span class="en">On</span><span class="de">An</span></b></div>
+            <div><span><span class="en">Online status</span><span class="de">Online-Status</span></span><b><span class="en">Available to play</span><span class="de">Spielbereit</span></b></div>
+            <div><span><span class="en">Trophy level</span><span class="de">Trophäen-Stufe</span></span><b>287</b></div>
+            <div><span><span class="en">System software</span><span class="de">Systemsoftware</span></span><b>14.10.00</b></div>
+            <div><span>PlayStation Plus</span><b><span class="en">Active</span><span class="de">Aktiv</span></b></div>
+          </div>
+        </div>
+      </div>
+      <p class="fict"><span class="en">AI-generated picture and illustration with made-up values, not a screenshot.</span><span class="de">KI-erzeugtes Bild und Illustration mit erfundenen Werten, kein Screenshot.</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="new" class="tint">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Just arrived</span><span class="de">Gerade neu</span></p>
+      <h2><span class="en">Sturdier rest mode,<br>safer diagnostics.</span><span class="de">Robusterer Ruhemodus,<br>sicherere Diagnose.</span></h2>
+      <p class="lead"><span class="en">The latest releases make switching off reliable even when the console is still busy, and keep your PSN data out of bug reports.</span><span class="de">Die letzten Releases machen das Ausschalten zuverlässig, auch wenn die Konsole noch beschäftigt ist, und halten deine PSN-Daten aus Fehlerberichten heraus.</span></p>
+    </div>
+    <div class="bento">
+      <div class="b s6 reveal"><span class="tag">26.10.2</span><h3><span class="en">Off stays off</span><span class="de">Aus bleibt aus</span></h3><p><span class="en">If the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing "off". Pulled the plug meanwhile? It stops at once.</span><span class="de">Nimmt die PS5 den Ruhemodus nicht sofort an, wiederholt Home Assistant im Hintergrund bis zu 210 Sekunden und zeigt weiter „aus“. Zwischendurch Stecker gezogen? Dann hört es sofort auf.</span></p></div>
+      <div class="b s6 reveal d1"><span class="tag">26.10.2</span><h3><span class="en">Diagnostics without secrets</span><span class="de">Diagnose ohne Geheimnisse</span></h3><p><span class="en">Pairing keys, PSN account ID, refresh token, IP and MAC address are redacted from the diagnostics download.</span><span class="de">Kopplungsschlüssel, PSN-Konto-ID, Erneuerungs-Token, IP- und MAC-Adresse werden im Diagnose-Download geschwärzt.</span></p></div>
+      <div class="b s4 reveal"><span class="tag">26.10.2</span><h3><span class="en">Starts without Sony</span><span class="de">Startet ohne Sony</span></h3><p><span class="en">Setup no longer waits for the PSN cloud or the update page; both load in the background.</span><span class="de">Die Einrichtung wartet nicht mehr auf die PSN-Cloud oder die Update-Seite; beide laden im Hintergrund.</span></p></div>
+      <div class="b s4 reveal d1"><span class="tag">26.10.2</span><h3><span class="en">Re-pair keeps the cloud</span><span class="de">Neu koppeln behält die Cloud</span></h3><p><span class="en">A new PIN no longer drops the PSN cloud settings from the entry.</span><span class="de">Eine neue PIN wirft die PSN-Cloud-Einstellungen nicht mehr aus dem Eintrag.</span></p></div>
+      <div class="b s4 reveal d2"><span class="tag">26.10.1</span><h3><span class="en">Calendar versions</span><span class="de">Kalender-Versionen</span></h3><p><span class="en">Releases count year.month.number: <code>26.10.2</code> is the second release of October 2026.</span><span class="de">Releases zählen Jahr.Monat.Nummer: <code>26.10.2</code> ist das zweite Release im Oktober 2026.</span></p></div>
+    </div>
+    <p class="cap reveal"><span class="en">Everything that changed, release by release: the <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">changelog</a>.</span><span class="de">Alles, was sich geändert hat, Release für Release: das <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">Changelog</a>.</span></p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">What it does</span><span class="de">Was sie kann</span></p>
+      <h2><span class="en">On, off and everything between.<br>Right in Home Assistant.</span><span class="de">An, aus und alles dazwischen.<br>Direkt in Home Assistant.</span></h2>
+      <p class="lead"><span class="en">The same local protocol the PS App and Remote Play use, rebuilt and checked byte for byte.</span><span class="de">Dasselbe lokale Protokoll, das PS-App und Remote Play nutzen, nachgebaut und Byte für Byte geprüft.</span></p>
+    </div>
+    <div class="grid3">
+      <div class="tile reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></svg></div><h3><span class="en">Wake up and rest mode</span><span class="de">Aufwecken und Ruhemodus</span></h3><p><span class="en">A media player and a power switch. Wake-up takes about five seconds, rest mode is sent over a short Remote Play session.</span><span class="de">Ein Mediaplayer und ein Ein/Aus-Schalter. Aufwecken dauert etwa fünf Sekunden, der Ruhemodus geht über eine kurze Remote-Play-Sitzung.</span></p></div>
+      <div class="tile reveal d1"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3><span class="en">On, rest mode or off</span><span class="de">An, Ruhemodus oder aus</span></h3><p><span class="en">A status sensor tells all three apart, every five seconds, with no pairing needed.</span><span class="de">Ein Status-Sensor unterscheidet alle drei, alle fünf Sekunden, ganz ohne Kopplung.</span></p></div>
+      <div class="tile reveal d2"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 15l3-3 2 2 3-4"/></svg></div><h3><span class="en">Current game</span><span class="de">Laufendes Spiel</span></h3><p><span class="en">Name, title ID and cover in the game sensor, the media player and an image entity (with the optional PSN cloud).</span><span class="de">Name, Titel-ID und Cover im Spiel-Sensor, im Mediaplayer und als Bild-Entität (mit der optionalen PSN-Cloud).</span></p></div>
+      <div class="tile reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 6h3a3 3 0 0 1-3 4M7 6H4a3 3 0 0 0 3 4"/></svg></div><h3><span class="en">Trophies and profile</span><span class="de">Trophäen und Profil</span></h3><p><span class="en">Trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID.</span><span class="de">Trophäen-Stufe und Fortschritt, Platin bis Bronze, Online-Status, zuletzt online, PS Plus, Avatar und Online-ID.</span></p></div>
+      <div class="tile reveal d1"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg></div><h3><span class="en">System software</span><span class="de">Systemsoftware</span></h3><p><span class="en">An update entity compares the installed version with the latest one on Sony's update page, with release notes.</span><span class="de">Eine Update-Entität vergleicht die installierte Version mit der neuesten auf Sonys Update-Seite, mit Hinweisen.</span></p></div>
+      <div class="tile reveal d2"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div><h3><span class="en">Finds itself</span><span class="de">Findet sich selbst</span></h3><p><span class="en">Discovered by DHCP host name or Sony MAC address, follows IP changes, and pairs with the 8-digit PIN.</span><span class="de">Per DHCP-Hostname oder Sony-MAC-Adresse gefunden, folgt IP-Wechseln und koppelt mit der 8-stelligen PIN.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cloud" class="tint">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="eyebrow"><span class="en">Optional PSN cloud</span><span class="de">Optionale PSN-Cloud</span></p>
+      <h2><span class="en">What's playing.<br>Only if you want.</span><span class="de">Was gerade läuft.<br>Nur wenn du willst.</span></h2>
+      <ul class="points">
+        <li><b><span class="en">Why the cloud at all</span><span class="de">Warum überhaupt Cloud</span></b><span><span class="en">Unlike the PS4, the PS5 does not report the current game on the local network. Only Sony knows.</span><span class="de">Anders als die PS4 meldet die PS5 das laufende Spiel nicht im Heimnetz. Das weiß nur Sony.</span></span></li>
+        <li><b><span class="en">One token, stays local</span><span class="de">Ein Token, bleibt lokal</span></b><span><span class="en">Paste an NPSSO token once. Home Assistant keeps only a refresh token in its own storage and replaces it on every renewal.</span><span class="de">Einmal ein NPSSO-Token einfügen. Home Assistant behält nur ein Erneuerungs-Token im eigenen Speicher und ersetzt es bei jeder Erneuerung.</span></span></li>
+        <li><b><span class="en">Reminds you in time</span><span class="de">Erinnert rechtzeitig</span></b><span><span class="en">A sensor shows when the login expires; 7 days before, a repair asks for a new token.</span><span class="de">Ein Sensor zeigt, wann die Anmeldung abläuft; 7 Tage vorher fragt eine Reparatur nach einem neuen Token.</span></span></li>
+        <li><b><span class="en">Control stays local</span><span class="de">Steuerung bleibt lokal</span></b><span><span class="en">On, off and status never go through Sony, with or without the cloud.</span><span class="de">An, aus und Status gehen nie über Sony, mit oder ohne Cloud.</span></span></li>
+      </ul>
+    </div>
+    <div class="prof reveal d1" role="img" aria-label="Illustration of a PSN profile card with trophy level and trophy counts, made-up values.">
+      <div class="prof-head"><span class="avatar" aria-hidden="true"></span><div><b>Player_One</b><small><i></i><span class="en">Available to play</span><span class="de">Spielbereit</span></small></div></div>
+      <div class="lvl"><b>287</b><span><span class="en">Trophy level &middot; 64 %</span><span class="de">Trophäen-Stufe &middot; 64 %</span></span></div>
+      <div class="track"><i></i></div>
+      <div class="tro">
+        <div><span><i class="plat"></i><span class="en">Platinum</span><span class="de">Platin</span></span><b>3</b></div>
+        <div><span><i class="gold"></i>Gold</span><b>41</b></div>
+        <div><span><i class="silv"></i><span class="en">Silver</span><span class="de">Silber</span></span><b>118</b></div>
+        <div><span><i class="bron"></i>Bronze</span><b>506</b></div>
+      </div>
+      <div class="prof-foot"><span>PlayStation Plus <b><span class="en">Active</span><span class="de">Aktiv</span></b></span><span><span class="en">Login expires in</span><span class="de">Anmeldung läuft ab in</span> <b><span class="en">52 days</span><span class="de">52 Tagen</span></b></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="entities">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Entities</span><span class="de">Entitäten</span></p>
+      <h2><span class="en">Local first.<br>Cloud on top.</span><span class="de">Erst lokal.<br>Cloud obendrauf.</span></h2>
+      <p class="lead"><span class="en">All IDs start with the device name, for example <code>switch.playstation_5_power</code>. Names in English and German.</span><span class="de">Alle IDs beginnen mit dem Gerätenamen, zum Beispiel <code>switch.playstation_5_power</code>. Namen auf Deutsch und Englisch.</span></p>
+    </div>
+    <div class="reveal">
+      <table class="tbl">
+        <thead><tr><th><span class="en">Platform</span><span class="de">Plattform</span></th><th><span class="en">Entity</span><span class="de">Entität</span></th><th><span class="en">Note</span><span class="de">Hinweis</span></th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="3"><span class="en">Local</span><span class="de">Lokal</span></td></tr>
+          <tr><td><span class="en">Media player</span><span class="de">Mediaplayer</span></td><td><code>media_player.playstation_5</code></td><td><span class="en">Playing (with game) / on / off, switch on and off</span><span class="de">Spielt (mit Spiel) / an / aus, ein- und ausschalten</span></td></tr>
+          <tr><td><span class="en">Switch</span><span class="de">Schalter</span></td><td><code>power</code></td><td><span class="en">On = running, off = rest mode</span><span class="de">An = läuft, aus = Ruhemodus</span></td></tr>
+          <tr><td>Sensor</td><td><code>status</code></td><td><span class="en">On, rest mode or off; attribute <code>changing</code> during a command</span><span class="de">An, Ruhemodus oder aus; Attribut <code>changing</code> während eines Befehls</span></td></tr>
+          <tr><td>Sensor</td><td><code>game</code></td><td><span class="en">Current game, attribute <code>title_id</code></span><span class="de">Laufendes Spiel, Attribut <code>title_id</code></span></td></tr>
+          <tr><td>Update</td><td><code>system_software</code></td><td><span class="en">Installed against Sony's latest version</span><span class="de">Installiert gegen Sonys neueste Version</span></td></tr>
+          <tr class="grp"><td colspan="3"><span class="en">Optional PSN cloud</span><span class="de">Optionale PSN-Cloud</span></td></tr>
+          <tr><td>Sensor</td><td><code>online_status</code> <code>last_online</code> <code>online_id</code></td><td></td></tr>
+          <tr><td>Sensor</td><td><code>trophy_level</code> <code>trophy_level_progress</code> <code>platinum_trophies</code> … <code>bronze_trophies</code></td><td></td></tr>
+          <tr><td>Sensor</td><td><code>psn_login_expires</code></td><td><span class="en">When the stored login runs out</span><span class="de">Wann die gespeicherte Anmeldung abläuft</span></td></tr>
+          <tr><td><span class="en">Binary sensor</span><span class="de">Binärsensor</span></td><td><code>playstation_plus</code></td><td></td></tr>
+          <tr><td><span class="en">Image</span><span class="de">Bild</span></td><td><code>game_cover</code> <code>avatar</code></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="tint">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">How it works</span><span class="de">Wie es funktioniert</span></p>
+      <h2><span class="en">Two local channels.<br>One optional.</span><span class="de">Zwei lokale Wege.<br>Einer optional.</span></h2>
+      <p class="lead"><span class="en">Status every 5 seconds, the PSN cloud once a minute, Sony's update page every 6 hours.</span><span class="de">Status alle 5 Sekunden, die PSN-Cloud einmal pro Minute, Sonys Update-Seite alle 6 Stunden.</span></p>
+    </div>
+    <div class="flow">
+      <div class="lane reveal"><div class="end"><b>Home Assistant</b><span>Device Discovery Protocol</span></div><div class="arrow"><svg viewBox="0 0 120 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h112M108 2l6 5-6 5"/></svg>UDP 9302</div><div class="end r"><b><span class="en">Status and wake-up</span><span class="de">Status und Aufwecken</span></b><span><span class="en">on, rest mode, off, system software</span><span class="de">an, Ruhemodus, aus, Systemsoftware</span></span></div></div>
+      <div class="lane reveal d1"><div class="end"><b>Home Assistant</b><span>Remote Play</span></div><div class="arrow"><svg viewBox="0 0 120 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h112M108 2l6 5-6 5"/></svg>TCP 9295</div><div class="end r"><b><span class="en">Pairing and rest mode</span><span class="de">Kopplung und Ruhemodus</span></b><span><span class="en">8-digit PIN once, then a short session</span><span class="de">einmal 8-stellige PIN, dann kurze Sitzung</span></span></div></div>
+      <div class="lane reveal d2"><div class="end"><b>Home Assistant</b><span>HTTPS, <span class="en">optional</span><span class="de">optional</span></span></div><div class="arrow"><svg viewBox="0 0 120 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h112M108 2l6 5-6 5"/></svg>PSN</div><div class="end r"><b><span class="en">Game and trophies</span><span class="de">Spiel und Trophäen</span></b><span><span class="en">presence, trophy summary, profile</span><span class="de">Präsenz, Trophäen, Profil</span></span></div></div>
+    </div>
+    <p class="cap reveal"><span class="en">The Remote Play handshake and key tables come from <a href="https://github.com/ktnrg45/pyremoteplay">pyremoteplay</a> by ktnrg45 (GPLv3), which builds on Chiaki. Thanks for the groundwork.</span><span class="de">Remote-Play-Handshake und Schlüsseltabellen stammen aus <a href="https://github.com/ktnrg45/pyremoteplay">pyremoteplay</a> von ktnrg45 (GPLv3), das auf Chiaki aufbaut. Danke für die Vorarbeit.</span></p>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Install</span><span class="de">Installation</span></p>
+      <h2><span class="en">Install, pair,<br>done.</span><span class="de">Installieren, koppeln,<br>fertig.</span></h2>
+    </div>
+    <div class="install">
+      <div class="panel reveal">
+        <h3><span class="en">With HACS</span><span class="de">Mit HACS</span></h3>
+        <p class="muted"><span class="en">As a custom repository.</span><span class="de">Als benutzerdefiniertes Repository.</span></p>
+        <ol class="steps">
+          <li class="en">In HACS, add a custom repository of type <b>Integration</b>:</li>
+          <li class="de">Füge in HACS ein benutzerdefiniertes Repository vom Typ <b>Integration</b> hinzu:</li>
+        </ol>
+        <div class="repo"><code id="repo">https://github.com/SH1FT-W/ps5</code><button class="copy" type="button" data-copy="repo"><span class="en">Copy</span><span class="de">Kopieren</span></button></div>
+        <ol class="steps" style="counter-reset: s 1">
+          <li class="en"><b>Download PlayStation 5</b> and restart Home Assistant.</li>
+          <li class="en"><b>Add the console.</b> It usually shows up under Settings, Devices &amp; services, Discovered. Otherwise add the PlayStation 5 integration and pick it or enter its IP address.</li>
+          <li class="en"><b>Pair it.</b> On the PS5 open Settings, System, Remote Play, Pair device, and enter the PIN. For the PSN account ID enter the number, or paste an NPSSO token instead.</li>
+          <li class="de"><b>Lade PlayStation 5 herunter</b> und starte Home Assistant neu.</li>
+          <li class="de"><b>Füge die Konsole hinzu.</b> Sie erscheint meist unter Einstellungen, Geräte &amp; Dienste, Entdeckt. Sonst die Integration PlayStation 5 hinzufügen und sie auswählen oder die IP-Adresse eingeben.</li>
+          <li class="de"><b>Koppeln.</b> An der PS5 Einstellungen, System, Remote Play, Gerät verknüpfen öffnen und die PIN eingeben. Für die PSN-Konto-ID die Zahl eintragen oder stattdessen ein NPSSO-Token einfügen.</li>
+        </ol>
+        <p class="note"><span class="en">New IP address later? Three dots, Reconfigure.</span><span class="de">Später eine neue IP-Adresse? Drei Punkte, Neu konfigurieren.</span></p>
+      </div>
+      <div class="panel reveal d1">
+        <h3><span class="en">What you need</span><span class="de">Was du brauchst</span></h3>
+        <p class="muted"><span class="en">No MQTT, no extra app, no YAML.</span><span class="de">Kein MQTT, keine Zusatz-App, kein YAML.</span></p>
+        <ul class="req">
+          <li><span class="name">Home Assistant 2026.9+</span><span class="tg"><span class="en">Required</span><span class="de">Nötig</span></span></li>
+          <li><span class="name"><span class="en">A PS5 in the same network, Remote Play enabled</span><span class="de">Eine PS5 im selben Netz, Remote Play an</span></span><span class="tg"><span class="en">Required</span><span class="de">Nötig</span></span></li>
+          <li><span class="name"><span class="en">Rest mode: "Stay connected to the internet" and "Enable turning on PS5 from network"</span><span class="de">Ruhemodus: „Mit dem Internet verbunden bleiben“ und „Einschalten der PS5 über das Netzwerk aktivieren“</span></span><span class="tg"><span class="en">For wake-up</span><span class="de">Zum Wecken</span></span></li>
+          <li><span class="name"><span class="en">NPSSO token for game and trophies</span><span class="de">NPSSO-Token für Spiel und Trophäen</span></span><span class="tg opt">Optional</span></li>
+        </ul>
+        <p class="note"><span class="en">Tested on a PS5 with system software 14.10.</span><span class="de">Getestet an einer PS5 mit Systemsoftware 14.10.</span></p>
+      </div>
+      <div class="panel full reveal">
+        <div class="shield">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div>
+            <h3><span class="en">Your PSN login stays with you</span><span class="de">Deine PSN-Anmeldung bleibt bei dir</span></h3>
+            <p class="muted" style="margin-top:6px"><span class="en">The NPSSO token and the refresh token stay in your Home Assistant. They only travel to Sony's own login servers, never anywhere else. A token used only to look up the account ID is not stored at all. The diagnostics download redacts tokens, pairing keys, account IDs, IP and MAC address.</span><span class="de">NPSSO-Token und Erneuerungs-Token bleiben in deinem Home Assistant. Sie gehen nur an Sonys eigene Anmeldeserver, sonst nirgendwohin. Ein Token, das nur zum Nachschlagen der Konto-ID dient, wird gar nicht gespeichert. Der Diagnose-Download schwärzt Tokens, Kopplungsschlüssel, Konto-IDs, IP- und MAC-Adresse.</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="panel full reveal">
+        <h3><span class="en">Without HACS</span><span class="de">Ohne HACS</span></h3>
+        <p class="muted"><span class="en">Download the <a href="https://github.com/SH1FT-W/ps5/releases/latest">latest release</a>, copy its <code>custom_components/ps5</code> folder into <code>/config/custom_components/</code>, restart Home Assistant and add the console.</span><span class="de">Lade das <a href="https://github.com/SH1FT-W/ps5/releases/latest">neueste Release</a> herunter, kopiere den Ordner <code>custom_components/ps5</code> nach <code>/config/custom_components/</code>, starte Home Assistant neu und füge die Konsole hinzu.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="tint">
+  <div class="wrap narrow">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></p>
+      <h2><span class="en">What the console<br>does its own way.</span><span class="de">Was die Konsole<br>auf ihre Art macht.</span></h2>
+    </div>
+    <div class="faq reveal">
+      <details open><summary><span class="en">Why does wake-up not work?</span><span class="de">Warum klappt das Aufwecken nicht?</span></summary><p><span class="en">The PS5 can only be woken from rest mode, not when it is fully off. In its power saving settings, "Stay connected to the internet" and "Enable turning on PS5 from network" have to be on.</span><span class="de">Die PS5 lässt sich nur aus dem Ruhemodus wecken, nicht aus „komplett aus“. In den Energiespar-Einstellungen müssen „Mit dem Internet verbunden bleiben“ und „Einschalten der PS5 über das Netzwerk aktivieren“ an sein.</span></p></details>
+      <details><summary><span class="en">Why does rest mode sometimes take a while?</span><span class="de">Warum dauert der Ruhemodus manchmal?</span></summary><p><span class="en">Shortly after waking up the PS5 reports "Remote Play busy" for about a minute. Home Assistant shows "off" right away and retries in the background after 20, 40, 60 and 90 seconds.</span><span class="de">Kurz nach dem Aufwachen meldet die PS5 etwa eine Minute „Remote Play belegt“. Home Assistant zeigt sofort „aus“ und wiederholt im Hintergrund nach 20, 40, 60 und 90 Sekunden.</span></p></details>
+      <details><summary><span class="en">Why is the game sensor empty?</span><span class="de">Warum ist der Spiel-Sensor leer?</span></summary><p><span class="en">The PS5 does not report the current game on the local network. Set up the optional PSN cloud (Configure, NPSSO token) to get it.</span><span class="de">Die PS5 meldet das laufende Spiel nicht im Heimnetz. Dafür die optionale PSN-Cloud einrichten (Konfigurieren, NPSSO-Token).</span></p></details>
+      <details><summary><span class="en">Why are the entities never unavailable?</span><span class="de">Warum sind die Entitäten nie nicht verfügbar?</span></summary><p><span class="en">A console that does not answer is fully off or not on the network, so it counts as off, not as an error. Only the cloud entities are unavailable without a connection to Sony.</span><span class="de">Eine Konsole, die nicht antwortet, ist komplett aus oder nicht im Netz, also gilt sie als aus, nicht als Fehler. Nur die Cloud-Entitäten sind ohne Verbindung zu Sony nicht verfügbar.</span></p></details>
+      <details><summary><span class="en">Can it install system updates or start games?</span><span class="de">Kann sie Updates installieren oder Spiele starten?</span></summary><p><span class="en">No. The PS5 installs updates itself in rest mode ("Install automatically" in its settings). Starting games or sending buttons would need a full Remote Play session.</span><span class="de">Nein. Die PS5 installiert Updates im Ruhemodus selbst („Automatisch installieren“ in ihren Einstellungen). Spiele starten oder Tasten senden bräuchte eine volle Remote-Play-Sitzung.</span></p></details>
+      <details><summary><span class="en">Switching off says the pairing is unknown.</span><span class="de">Ausschalten meldet, die Kopplung sei unbekannt.</span></summary><p><span class="en">The device was removed on the PS5 under Remote Play. Home Assistant asks for a new PIN.</span><span class="de">Das Gerät wurde an der PS5 unter Remote Play entfernt. Home Assistant fragt nach einer neuen PIN.</span></p></details>
+      <details><summary><span class="en">How do I report a bug?</span><span class="de">Wie melde ich einen Fehler?</span></summary><p><span class="en">Download the diagnostics (Settings, Devices &amp; services, PlayStation 5, three dots) and attach them to a <a href="https://github.com/SH1FT-W/ps5/issues">GitHub issue</a>. Keys, tokens, account IDs, IP and MAC address are redacted.</span><span class="de">Diagnose herunterladen (Einstellungen, Geräte &amp; Dienste, PlayStation 5, drei Punkte) und an ein <a href="https://github.com/SH1FT-W/ps5/issues">GitHub-Issue</a> hängen. Schlüssel, Tokens, Konto-IDs, IP- und MAC-Adresse sind geschwärzt.</span></p></details>
+    </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="wrap narrow reveal">
+    <p class="eyebrow">PlayStation 5</p>
+    <h2><span class="en">Press start.<br><em>Locally.</em></span><span class="de">Start drücken.<br><em>Lokal.</em></span></h2>
+    <p class="lead"><span class="en">One integration, on and off, no cloud needed.</span><span class="de">Eine Integration, an und aus, keine Cloud nötig.</span></p>
+    <div class="cta">
+      <a class="btn" href="#install"><span class="en">Install PlayStation 5</span><span class="de">PlayStation 5 installieren</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/ps5/releases"><span class="en">Releases</span><span class="de">Releases</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand"><img src="logo.png" alt="">PlayStation 5</span>
+    <nav>
+      <a href="https://github.com/SH1FT-W/ps5#readme">README</a>
+      <a href="https://github.com/SH1FT-W/ps5/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/SH1FT-W/ps5/releases">Releases</a>
+      <a href="https://github.com/SH1FT-W/ps5/issues"><span class="en">Issues</span><span class="de">Fehler melden</span></a>
+      <a href="https://hacs.xyz">HACS</a>
+      <a href="https://github.com/SH1FT-W/ps5">GitHub</a>
+      <a href="https://github.com/SH1FT-W/ps5/blob/main/LICENSE"><span class="en">GPLv3 License</span><span class="de">GPLv3-Lizenz</span></a>
+    </nav>
+    <p class="fine"><span class="en">PlayStation 5 is an independent project and is not affiliated with, endorsed by or sponsored by Sony Interactive Entertainment, Home Assistant or Nabu Casa. PlayStation, PS5 and PlayStation Network are trademarks or registered trademarks of Sony Interactive Entertainment Inc. Protocol and key tables after pyremoteplay (ktnrg45, GPLv3). Copyright 2026 SH1FT-W.</span><span class="de">PlayStation 5 ist ein unabhängiges Projekt und gehört weder zu Sony Interactive Entertainment, Home Assistant noch Nabu Casa und wird von ihnen nicht unterstützt. PlayStation, PS5 und PlayStation Network sind Marken oder eingetragene Marken von Sony Interactive Entertainment Inc. Protokoll und Schlüsseltabellen nach pyremoteplay (ktnrg45, GPLv3). Copyright 2026 SH1FT-W.</span></p>
+  </div>
+</footer>
+
+<script>
+  // Kopieren der Repo-Adresse
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    var label = b.innerHTML;
+    b.addEventListener('click', function () {
+      var t = document.getElementById(b.dataset.copy).textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () {
+        b.innerHTML = '<span class="en">Copied</span><span class="de">Kopiert</span>';
+        setTimeout(function () { b.innerHTML = label; }, 1600);
+      }, function () {});
+    });
+  });
+
+  // Versionszeile: manifest.json aus dem Repo, sonst das letzte GitHub-Release; der Text oben ist der Fallback.
+  (function () {
+    var el = document.getElementById('ps5-version');
+    function show(v) { if (v && el) el.textContent = 'Version ' + v; }
+    fetch('https://raw.githubusercontent.com/SH1FT-W/ps5/main/custom_components/ps5/manifest.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.version) show(String(j.version)); else throw 0; })
+      .catch(function () {
+        fetch('https://api.github.com/repos/SH1FT-W/ps5/releases/latest')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (j) { show(j && String(j.tag_name || '').replace(/^v/, '')); })
+          .catch(function () {});
+      });
+  })();
+</script>
+</body>
+</html>

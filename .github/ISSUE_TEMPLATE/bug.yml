@@ -1,0 +1,66 @@
+name: Bug report
+description: Something in PlayStation 5 does not work as described.
+labels: ["bug"]
+body:
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: input
+    id: ps5_version
+    attributes:
+      label: PlayStation 5 integration version
+      description: Settings > Devices & services > PlayStation 5, or HACS.
+      placeholder: "26.10.2"
+    validations:
+      required: true
+  - type: input
+    id: console
+    attributes:
+      label: Console model and system software
+      description: For example PS5 Slim, system software 14.10.00. The version is shown on the device page in Home Assistant or under Settings > System > System software on the console.
+      placeholder: "PS5 Slim, 14.10.00"
+    validations:
+      required: true
+  - type: dropdown
+    id: cloud
+    attributes:
+      label: PSN cloud
+      description: Is the optional PSN cloud (game, trophies, online status) set up?
+      options:
+        - "No, local only"
+        - "Yes"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Settings > Devices & services > PlayStation 5 > three dots > Download diagnostics. Keys, tokens, account IDs, IP address and MAC address are redacted. Drag it here. Never paste your NPSSO token into an issue.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Debug log lines (logger custom_components.ps5 set to debug), rest mode settings on the console, whether the console is on Wi-Fi or LAN.

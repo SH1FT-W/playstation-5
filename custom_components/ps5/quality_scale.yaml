@@ -1,0 +1,99 @@
+# Integration Quality Scale, selbst geprüft (keine Core-Integration, die Stufe ist nicht offiziell).
+rules:
+  # Bronze
+  action-setup:
+    status: exempt
+    comment: Keine eigenen Aktionen; Ein/Aus über media_player/switch.
+  appropriate-polling:
+    status: done
+    comment: DDP-Statusabfrage (eine UDP-Nachricht) alle 5 s, damit HDMI-Automationen schnell reagieren.
+  brands: done
+  common-modules: done
+  config-flow-test-coverage: done
+  config-flow: done
+  dependency-transparency:
+    status: exempt
+    comment: Keine externen Abhängigkeiten; Protokoll in protocol.py, nur cryptography aus HA.
+  docs-actions:
+    status: exempt
+    comment: Keine eigenen Aktionen.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  entity-event-setup:
+    status: exempt
+    comment: Keine Ereignis-Abos.
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure:
+    status: done
+    comment: Statusabfrage vor dem Koppeln, Kopplung selbst prüft PIN und Konto-ID.
+  test-before-setup:
+    status: exempt
+    comment: Eine ausgeschaltete PS5 ist kein Fehler, sondern „aus“.
+  unique-config-entry:
+    status: done
+    comment: MAC der PS5 (host-id).
+
+  # Silver
+  action-exceptions: done
+  config-entry-unloading: done
+  docs-configuration-parameters:
+    status: exempt
+    comment: Kein Options-Flow.
+  docs-installation-parameters: done
+  entity-unavailable:
+    status: exempt
+    comment: Keine Antwort heißt „aus“; Entitäten bleiben verfügbar.
+  integration-owner: done
+  log-when-unavailable:
+    status: exempt
+    comment: Siehe entity-unavailable.
+  parallel-updates: done
+  reauthentication-flow:
+    status: done
+    comment: Lehnt die PS5 die Kopplung ab (in der PS5 gelöscht), startet „Neu koppeln“ mit PIN.
+  test-coverage: done
+
+  # Gold
+  devices: done
+  diagnostics: done
+  discovery-update-info:
+    status: done
+    comment: DHCP-Erkennung aktualisiert die IP einer bekannten PS5.
+  discovery:
+    status: done
+    comment: DHCP (Hostname ps5-*) und Suche per Broadcast im Einrichtungsdialog.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: Eine Einrichtung je PS5.
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: exempt
+    comment: Nur vier Entitäten, alle nützlich.
+  entity-translations: done
+  exception-translations: done
+  icon-translations: done
+  reconfiguration-flow: done
+  repair-issues:
+    status: exempt
+    comment: Neu koppeln läuft über Reauth.
+  stale-devices:
+    status: exempt
+    comment: Eine Einrichtung je PS5.
+
+  # Platinum
+  async-dependency: done
+  inject-websession:
+    status: exempt
+    comment: Kein HTTP über aiohttp; eigene UDP/TCP-Verbindungen.
+  strict-typing: done
