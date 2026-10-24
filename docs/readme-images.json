@@ -16,7 +16,7 @@
       "pillBg": "#ffffff",
       "pillLine": "rgba(14,30,60,0.08)",
       "win": "#06090f",
-      "bar": ""
+      "bar": "linear-gradient(#ffffff, #f3f5f9)"
     },
     "dark": {
       "bg": "#070A10",
@@ -33,7 +33,7 @@
       "pillBg": "rgba(255,255,255,0.06)",
       "pillLine": "rgba(255,255,255,0.10)",
       "win": "#06090f",
-      "bar": ""
+      "bar": "linear-gradient(#2a2d33, #22252a)"
     }
   },
   "fonts": {
@@ -162,6 +162,42 @@
           "text": "Game, trophies and profile from Sony once a minute. Control never goes through the cloud."
         }
       ]
+    }
+  },
+  "title": {
+    "name": "PlayStation 5",
+    "nameSize": 56,
+    "eyebrow": "For Home Assistant",
+    "lead": "Your PS5, <em>fully local.</em>",
+    "sub": "Status, wake-up and rest mode the way the PS App does it at home, without cloud, MQTT or an extra app. Game, trophies and online status optionally from PSN.",
+    "pills": [
+      [
+        "Local, no cloud"
+      ],
+      [
+        "Wake and rest",
+        "v"
+      ],
+      [
+        "HACS"
+      ]
+    ],
+    "logo": "docs/images/readme-icon.png",
+    "shot": {
+      "light": "docs/images/title-shot-light.png",
+      "dark": "docs/images/title-shot-dark.png",
+      "srcW": 3200,
+      "winW": 3200,
+      "s": 0.28,
+      "strips": [
+        [
+          0,
+          2000
+        ]
+      ],
+      "bar": "Home Assistant › PlayStation 5",
+      "left": 600,
+      "top": 70
     }
   }
 }

@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.png" />
-  <img src="docs/images/readme-title-light.png" alt="PlayStation 5: Your PS5, fully local. An AI-generated picture of a PS5 with a DualSense controller on a TV board in a dim living room, the TV shows a mountain lake." />
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
+  <img src="docs/images/readme-title-light.webp" alt="PlayStation 5: Your PS5, fully local. The feature overview of the project page in a window." />
 </picture>
 
 <p>Status, wake-up and rest mode for the PS5 in Home Assistant.<br/>
@@ -32,20 +32,26 @@ PlayStation 5 brings the **PS5** into Home Assistant over the same local protoco
 <sub><b>JUST ARRIVED</b></sub>
 ## Sturdier rest mode, safer diagnostics.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-new-dark.png" />
-  <img src="docs/images/readme-cards-new-light.png" alt="Off stays off (26.10.2): if the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing off; fully switched off meanwhile, it stops at once. Diagnostics without secrets (26.10.2): pairing keys, PSN account ID, refresh token, IP and MAC address are redacted. Starts without Sony (26.10.2): setup no longer waits for the PSN cloud or the update page, re-pairing keeps the cloud settings. Calendar versions (26.10.1): year, month and the release of that month, 26.10.2 is the second release of October 2026." />
-</picture>
+<!-- cards:new -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/power-sleep-dark.svg"><img src="docs/images/icons/power-sleep-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Off stays off</b> <code>26.10.2</code><br>If the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing off. Fully switched off meanwhile? It stops at once.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/shield-lock-outline-dark.svg"><img src="docs/images/icons/shield-lock-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Diagnostics without secrets</b> <code>26.10.2</code><br>Pairing keys, PSN account ID, refresh token, IP and MAC address are redacted from the diagnostics download.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/rocket-launch-outline-dark.svg"><img src="docs/images/icons/rocket-launch-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Starts without Sony</b> <code>26.10.2</code><br>Setup no longer waits for the PSN cloud or the update page, both load in the background. Re-pairing keeps the cloud settings.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/calendar-outline-dark.svg"><img src="docs/images/icons/calendar-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Calendar versions</b> <code>26.10.1</code><br>Year, month and the release of that month: 26.10.2 is the second release of October 2026. The jump from 1.2.3 is intended, updates show up as usual.</td></tr>
+</table>
+<!-- /cards:new -->
 
 Every change, release by release, in the [changelog](CHANGELOG.md).
 
 <a id="features"></a>
 ## Features
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-features-dark.png" />
-  <img src="docs/images/readme-cards-features-light.png" alt="Wake up and rest mode: a media player and a power switch, wake-up takes about five seconds, rest mode goes over a short Remote Play session. On, rest mode or off: a status sensor tells all three apart every five seconds, without pairing. Current game: name, title ID and cover with the optional PSN cloud. Trophies and profile: trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID. System software: installed version against the latest one on Sony's update page. Finds itself: discovered by DHCP host name or Sony MAC address, pairs with the 8-digit PIN. Your login stays local: NPSSO and refresh token stay in Home Assistant. English and German." />
-</picture>
+<!-- cards:features -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/power-dark.svg"><img src="docs/images/icons/power-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Wake up and rest mode</b><br>A media player and a power switch. Wake-up takes about five seconds, rest mode goes over a short Remote Play session.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/sony-playstation-dark.svg"><img src="docs/images/icons/sony-playstation-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>On, rest mode or off</b><br>A status sensor tells all three apart, every five seconds, without pairing. A silent console counts as off, not as an error.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gamepad-variant-outline-dark.svg"><img src="docs/images/icons/gamepad-variant-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Current game</b><br>Name, title ID and cover in the game sensor, the media player and an image entity (with the optional PSN cloud).</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/trophy-outline-dark.svg"><img src="docs/images/icons/trophy-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Trophies and profile</b><br>Trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/update-dark.svg"><img src="docs/images/icons/update-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>System software</b><br>An update entity compares the installed version with the latest one on Sony's update page, with release notes.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/magnify-dark.svg"><img src="docs/images/icons/magnify-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Finds itself</b><br>Discovered by DHCP host name or Sony MAC address, follows IP changes and pairs with the 8-digit PIN from the console.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/key-outline-dark.svg"><img src="docs/images/icons/key-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Your login stays local</b><br>NPSSO and refresh token stay in Home Assistant and only go to Sony's login servers. A repair asks for a new token 7 days before expiry.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/translate-dark.svg"><img src="docs/images/icons/translate-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>English and German</b><br>Entity names, setup, repairs and error messages in both languages. Self-assessed against the Integration Quality Scale.</td></tr>
+</table>
+<!-- /cards:features -->
 
 After switching on or off, Home Assistant shows the target state right away and waits up to 45 seconds for the console to confirm it. If the PS5 does not accept rest mode yet (shortly after waking up it reports "Remote Play busy" for about a minute), Home Assistant retries in the background after 20, 40, 60 and 90 seconds and keeps the target state meanwhile.
 
@@ -54,10 +60,13 @@ The entities never become "unavailable": a console that does not answer is fully
 <a id="entities"></a>
 ## Entities
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-entities-dark.png" />
-  <img src="docs/images/readme-cards-entities-light.png" alt="Media player: media_player.playstation_5, playing with game and cover, on or off, switch on and off. Power switch: switch.playstation_5_power, on means running, off means rest mode. Status and game: status (on, rest mode, off, attribute changing) and game (attribute title_id). System software: update.playstation_5_system_software. PSN cloud sensors: online_status, last_online, online_id, trophy_level, trophy_level_progress, platinum to bronze trophies, psn_login_expires. Images and PS Plus: game_cover, avatar and playstation_plus, only with the optional cloud." />
-</picture>
+<!-- cards:entities -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/television-play-dark.svg"><img src="docs/images/icons/television-play-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Media player</b><br>media_player.playstation_5: playing (with game and cover), on or off; switch on and off.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/toggle-switch-outline-dark.svg"><img src="docs/images/icons/toggle-switch-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Power switch</b><br>switch.playstation_5_power: on = running, off = rest mode. Handy for automations, for example switching the TV input.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/information-outline-dark.svg"><img src="docs/images/icons/information-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Status and game</b><br>status (on, rest mode, off, attribute changing during a command) and game (attribute title_id).</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/update-dark.svg"><img src="docs/images/icons/update-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>System software</b><br>update.playstation_5_system_software: installed against Sony's latest version. The PS5 installs it itself in rest mode.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/trophy-outline-dark.svg"><img src="docs/images/icons/trophy-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>PSN cloud sensors</b><br>online_status, last_online, online_id, trophy_level, trophy_level_progress, platinum to bronze trophies, psn_login_expires.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/image-outline-dark.svg"><img src="docs/images/icons/image-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Images and PS Plus</b><br>game_cover and avatar as image entities, playstation_plus as a binary sensor. Only with the optional cloud.</td></tr>
+</table>
+<!-- /cards:entities -->
 
 All IDs start with the device name, for example `switch.playstation_5_power`. Entity names are available in English and German.
 
@@ -169,10 +178,11 @@ When you open an [issue](https://github.com/SH1FT-W/playstation-5/issues), pleas
 
 ## How it works
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-how-dark.png" />
-  <img src="docs/images/readme-cards-how-light.png" alt="DDP, UDP 9302: status and wake-up, the way the PS App finds the console at home, every 5 seconds. Remote Play, TCP 9295: one-time pairing with the PIN, then a short session that only sends rest mode. PSN, optional: game, trophies and profile from Sony once a minute, control never goes through the cloud." />
-</picture>
+<!-- cards:how -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/radar-dark.svg"><img src="docs/images/icons/radar-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>DDP, UDP 9302</b><br>Status and wake-up, the way the PS App finds the console at home. Every 5 seconds.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/remote-dark.svg"><img src="docs/images/icons/remote-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>Remote Play, TCP 9295</b><br>One-time pairing with the PIN, then a short session that only sends rest mode.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/cloud-outline-dark.svg"><img src="docs/images/icons/cloud-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="29%" valign="top"><b>PSN, optional</b><br>Game, trophies and profile from Sony once a minute. Control never goes through the cloud.</td></tr>
+</table>
+<!-- /cards:how -->
 
 Status every 5 seconds, the PSN cloud once a minute, Sony's update page every 6 hours.
 
