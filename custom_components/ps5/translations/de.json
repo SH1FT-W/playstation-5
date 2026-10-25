@@ -147,7 +147,7 @@
     "step": {
       "init": {
         "title": "PlayStation Network (optional)",
-        "description": "Die Steuerung bleibt lokal. Mit der PSN-Cloud zeigt HA zusätzlich das laufende Spiel mit Cover, Online-Status, Trophäen, Avatar und PS Plus.\n\nZum Einschalten oder Erneuern: bei playstation.com anmelden, {sso_url} öffnen und den Wert hinter „npsso“ (oder die ganze Zeile) einfügen. Gespeichert wird nur ein Erneuerungs-Token.",
+        "description": "Die Steuerung bleibt lokal. Mit der PSN-Cloud zeigt HA zusätzlich das laufende Spiel mit Cover, Online-Status, Trophäen, Avatar und PS Plus.\n\nZum Einschalten oder Erneuern: bei playstation.com anmelden, {sso_url} öffnen und den Wert hinter „npsso“ (oder die ganze Zeile) einfügen. Das Token bleibt in Home Assistant, damit sich die Anmeldung selbst erneuert; eine Reparatur fragt erst wieder, wenn Sony es ablehnt.",
         "data": {
           "npsso": "NPSSO-Token",
           "disable_cloud": "PSN-Cloud ausschalten"

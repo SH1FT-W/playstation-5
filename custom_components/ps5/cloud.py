@@ -1,7 +1,9 @@
 """Optionaler PSN-Cloud-Teil: Präsenz (laufendes Spiel, Online-Status) jede Minute, Trophäen/Profil alle 15 Minuten.
 
 Fällt die Cloud aus, bleiben nur diese Entitäten unbekannt – Steuerung und An/Aus laufen lokal weiter.
-Läuft das Erneuerungs-Token ab (oder bald ab), meldet eine Reparatur mit Einfügefeld das neue NPSSO an.
+Das Erneuerungs-Token läuft fest ~10 Tage nach dem NPSSO-Tausch ab (die stündliche Erneuerung verlängert nicht, live
+13.–25.10.2026). Darum bleibt das NPSSO gespeichert und liefert kurz vor Ablauf selbst ein neues. Erst wenn Sony das
+NPSSO ablehnt (oder keins gespeichert ist), meldet eine Reparatur mit Einfügefeld das neue NPSSO an.
 """
 
 from __future__ import annotations
@@ -17,8 +19,8 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import CONF_PSN_ACCOUNT_ID, CONF_PSN_EXPIRES, CONF_PSN_TOKEN, DOMAIN
-from .psn import PSNClient, PSNError, PSNTokenError, async_account_id_for_token, async_token_from_npsso
+from .const import CONF_PSN_ACCOUNT_ID, CONF_PSN_EXPIRES, CONF_PSN_NPSSO, CONF_PSN_TOKEN, DOMAIN
+from .psn import PSNClient, PSNError, PSNTokenError, async_account_id_for_token, async_token_from_npsso, clean_npsso
 
 if TYPE_CHECKING:
     from .coordinator import PS5ConfigEntry
@@ -28,8 +30,10 @@ _LOGGER = logging.getLogger(__name__)
 CLOUD_INTERVAL = timedelta(seconds=60)
 # Trophäen und Profil ändern sich selten: jede 15. Runde
 SLOW_EVERY = 15
-# So früh vor Ablauf des Erneuerungs-Tokens erscheint die Reparatur
+# So früh vor Ablauf des Erneuerungs-Tokens erscheint die Reparatur (ohne gespeichertes NPSSO)
 WARN_BEFORE = 7 * 24 * 3600
+# So früh holt das gespeicherte NPSSO ein neues Erneuerungs-Token; klappt das nicht, erscheint die Reparatur
+RENEW_BEFORE = 3 * 24 * 3600
 SSO_URL = "https://ca.account.sony.com/api/v1/ssocookie"
 
 
@@ -84,6 +88,8 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
         )
         self.client.refresh_expires_at = entry.data.get(CONF_PSN_EXPIRES)
         self._round = 0
+        # Sony hat das gespeicherte NPSSO abgelehnt: bis zum nächsten Laden nicht erneut versuchen
+        self._npsso_rejected = False
 
     @callback
     def _save_token(self, token: dict[str, Any]) -> None:
@@ -110,15 +116,50 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
             data={"entry_id": self._entry.entry_id},
         )
 
-    async def _async_update_data(self) -> PSNData:
-        old = self.data
+    @property
+    def _can_renew(self) -> bool:
+        return bool(self._entry.data.get(CONF_PSN_NPSSO)) and not self._npsso_rejected
+
+    async def _async_renew(self, *, force: bool = False) -> bool:
+        """Mit dem gespeicherten NPSSO ein neues Erneuerungs-Token holen, wenn das alte bald (oder schon) abläuft."""
+        if not self._can_renew:
+            return False
+        expires = self.client.refresh_expires_at
+        if not force and (expires is None or expires - time.time() > RENEW_BEFORE):
+            return False
         try:
-            data = PSNData(presence=await self.client.presence())
-            if old is None or self._round % SLOW_EVERY == 0:
-                data.trophies = await self.client.trophies()
-                data.profile = await self.client.profile()
-            else:
-                data.trophies, data.profile = old.trophies, old.profile
+            token = await async_token_from_npsso(
+                async_get_clientsession(self.hass), str(self._entry.data[CONF_PSN_NPSSO])
+            )
+        except PSNTokenError:
+            _LOGGER.warning("%s: Sony rejected the stored NPSSO token, a repair asks for a new one", self._entry.title)
+            self._npsso_rejected = True
+            return False
+        except PSNError as err:
+            _LOGGER.debug("PSN renewal via NPSSO failed, retrying next round: %s", err)
+            return False
+        self.client.store(token)
+        return True
+
+    async def _async_fetch(self, old: PSNData | None) -> PSNData:
+        data = PSNData(presence=await self.client.presence())
+        if old is None or self._round % SLOW_EVERY == 0:
+            data.trophies = await self.client.trophies()
+            data.profile = await self.client.profile()
+        else:
+            data.trophies, data.profile = old.trophies, old.profile
+        return data
+
+    async def _async_update_data(self) -> PSNData:
+        await self._async_renew()
+        try:
+            try:
+                data = await self._async_fetch(self.data)
+            except PSNTokenError:
+                # Schon abgelaufen (z. B. HA lange aus): einmal über das NPSSO retten
+                if not await self._async_renew(force=True):
+                    raise
+                data = await self._async_fetch(self.data)
         except PSNTokenError as err:
             self._issue(expired=True)
             raise UpdateFailed(translation_domain=DOMAIN, translation_key="psn_expired") from err
@@ -129,7 +170,9 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
                 translation_placeholders={"error": str(err)},
             ) from err
         expires = self.client.refresh_expires_at
-        if expires is not None and expires - time.time() < WARN_BEFORE:
+        # Mit NPSSO lief die Erneuerung eben schon; ist der Ablauf trotzdem so nah, hat sie nicht geklappt
+        warn_before = RENEW_BEFORE if self._can_renew else WARN_BEFORE
+        if expires is not None and expires - time.time() < warn_before:
             self._issue(expired=False)
         else:
             ir.async_delete_issue(self.hass, DOMAIN, issue_id(self._entry.entry_id))
@@ -138,7 +181,10 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
 
 
 async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str) -> None:
-    """NPSSO → Erneuerungs-Token + Konto-ID im Eintrag speichern und neu laden (Optionen und Reparatur)."""
+    """NPSSO → Erneuerungs-Token + Konto-ID im Eintrag speichern und neu laden (Optionen und Reparatur).
+
+    Das NPSSO bleibt mit im Eintrag, damit die Integration später selbst neue Erneuerungs-Tokens holen kann.
+    """
     session = async_get_clientsession(hass)
     token = await async_token_from_npsso(session, npsso)
     account_id = await async_account_id_for_token(session, str(token["access_token"]))
@@ -148,6 +194,7 @@ async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str)
         CONF_PSN_ACCOUNT_ID: account_id,
         CONF_PSN_TOKEN: token["refresh_token"],
         CONF_PSN_EXPIRES: time.time() + float(expires_in) if expires_in else None,
+        CONF_PSN_NPSSO: clean_npsso(npsso),
     }
     hass.config_entries.async_update_entry(entry, data=data)
     ir.async_delete_issue(hass, DOMAIN, issue_id(entry.entry_id))
@@ -155,7 +202,11 @@ async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str)
 
 
 def deactivate(hass: HomeAssistant, entry: PS5ConfigEntry) -> None:
-    data = {k: v for k, v in entry.data.items() if k not in (CONF_PSN_ACCOUNT_ID, CONF_PSN_TOKEN, CONF_PSN_EXPIRES)}
+    data = {
+        k: v
+        for k, v in entry.data.items()
+        if k not in (CONF_PSN_ACCOUNT_ID, CONF_PSN_TOKEN, CONF_PSN_EXPIRES, CONF_PSN_NPSSO)
+    }
     hass.config_entries.async_update_entry(entry, data=data)
     ir.async_delete_issue(hass, DOMAIN, issue_id(entry.entry_id))
     hass.config_entries.async_schedule_reload(entry.entry_id)

@@ -9,10 +9,19 @@ from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 
-from .const import CONF_ACCOUNT_ID, CONF_PSN_ACCOUNT_ID, CONF_PSN_TOKEN, CONF_REGIST_KEY, CONF_RP_KEY
+from .const import CONF_ACCOUNT_ID, CONF_PSN_ACCOUNT_ID, CONF_PSN_NPSSO, CONF_PSN_TOKEN, CONF_REGIST_KEY, CONF_RP_KEY
 from .coordinator import PS5ConfigEntry
 
-TO_REDACT = {CONF_HOST, CONF_ACCOUNT_ID, CONF_PSN_ACCOUNT_ID, CONF_PSN_TOKEN, CONF_REGIST_KEY, CONF_RP_KEY, "host_id"}
+TO_REDACT = {
+    CONF_HOST,
+    CONF_ACCOUNT_ID,
+    CONF_PSN_ACCOUNT_ID,
+    CONF_PSN_NPSSO,
+    CONF_PSN_TOKEN,
+    CONF_REGIST_KEY,
+    CONF_RP_KEY,
+    "host_id",
+}
 
 
 async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: PS5ConfigEntry) -> dict[str, Any]:

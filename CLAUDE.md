@@ -24,6 +24,9 @@ Alternative zur App ps5-mqtt. Lizenz GPLv3 (Protokoll und Schlüsseltabellen aus
   Parameter 1:1 wie PSNAWP 3.0.3. Falsches Token → Location mit error=… (live geprüft).
 - PS5-DDP enthält KEIN running-app (am 13.10. mit FIFA 26 geprüft) → Spiel nur über PSN-Cloud (cloud.py, psn.py:
   basicPresences v2, trophySummary, profiles; Token-Rotation über refresh_token, im Eintrag gespeichert).
+- Erneuerungs-Token (refresh_token) hält fest ~10 Tage ab NPSSO-Tausch, die Erneuerung verlängert NICHT (live
+  13.–25.10.2026, Ablauf schwankt nur ±1 s). Darum bleibt das NPSSO im Eintrag (`psn_npsso`) und holt 3 Tage vor
+  Ablauf ein neues; Reparatur nur, wenn Sony das NPSSO ablehnt.
 - Firmware: Sony-Seite /{de-de|en-us}/support/hardware/ps5/system-software-info/ „Version: 26.06-14.10.00“;
   DDP system-version 14100003 → 14.10.00. Kein Installieren von außen.
 - Live 13.10.: Aufwecken ~5 s; Ruhemodus ok. Jede init-Anfrage reserviert Remote Play ~1 Min (danach 403

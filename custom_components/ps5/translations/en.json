@@ -147,7 +147,7 @@
     "step": {
       "init": {
         "title": "PlayStation Network (optional)",
-        "description": "Control stays local. With the PSN cloud HA also shows the running game with cover, online status, trophies, avatar and PS Plus.\n\nTo switch it on or renew it: sign in at playstation.com, open {sso_url} and paste the value after \"npsso\" (or the whole line). Only a renewal token is stored.",
+        "description": "Control stays local. With the PSN cloud HA also shows the running game with cover, online status, trophies, avatar and PS Plus.\n\nTo switch it on or renew it: sign in at playstation.com, open {sso_url} and paste the value after \"npsso\" (or the whole line). The token stays in Home Assistant so the login renews itself; a repair only asks again when Sony rejects it.",
         "data": {
           "npsso": "NPSSO token",
           "disable_cloud": "Switch off PSN cloud"

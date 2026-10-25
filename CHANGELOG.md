@@ -1,5 +1,15 @@
 # Changelog
 
+## 26.10.3 – 25.10.2026
+
+- **Fix:** The PSN cloud asked for a new NPSSO token every 3 days. Sony's refresh token runs out a fixed 10 days
+  after it was issued (renewals do not extend it), and the repair showed up 7 days before. Home Assistant now keeps
+  the NPSSO token and fetches a new refresh token by itself 3 days before expiry, also right after a long downtime.
+  A repair only appears when Sony rejects the NPSSO (about every two months). Existing setups get the repair one
+  last time, after that it renews itself.
+- The diagnostics also redact the stored NPSSO token.
+- Tests: renewal via NPSSO, rescue of an expired token, rejected and unreachable NPSSO, no early warning.
+
 ## 26.10.2 – 19.10.2026
 
 - **Fix:** If the PS5 is switched off completely while the rest mode command is being retried (no answer on the

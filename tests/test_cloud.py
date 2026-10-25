@@ -183,6 +183,7 @@ async def test_token_expired_creates_repair(
     resp = await client.post(f"/api/repairs/issues/fix/{flow['flow_id']}", json={"npsso": "frisch"})
     assert (await resp.json())["type"] == "create_entry"
     assert entry.data["psn_refresh_token"] == "neu"
+    assert entry.data["psn_npsso"] == "frisch"  # bleibt für die automatische Erneuerung
     assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id)) is None
     await hass.async_block_till_done()
 
@@ -192,6 +193,77 @@ async def test_expiring_soon_warns(hass: HomeAssistant, console: Console, aiocli
     entry = await _setup(hass)
     issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id))
     assert issue is not None and issue.translation_key == "psn_token_expiring"
+
+
+NPSSO_DATA = {**CLOUD_DATA, "psn_npsso": "gespeichert"}
+
+
+def _authorize_calls(mock: AiohttpClientMocker) -> int:
+    return sum(1 for call in mock.mock_calls if str(call[1]).startswith(psn.AUTHORIZE_URL))
+
+
+async def test_no_early_warning_with_npsso(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Sony verlängert das Erneuerungs-Token nicht (~10 Tage fest): mit NPSSO keine Reparatur nach 3 Tagen."""
+    mock_psn(aioclient_mock, refresh_expires_in=5 * 86400)
+    entry = await _setup(hass, NPSSO_DATA)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id)) is None
+    assert _authorize_calls(aioclient_mock) == 0  # noch nicht fällig
+
+
+async def test_renews_via_npsso_before_expiry(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    mock_psn(aioclient_mock)
+    aioclient_mock.get(psn.AUTHORIZE_URL, status=302, headers={"Location": "x://r?code=c"})
+    entry = await _setup(hass, {**NPSSO_DATA, "psn_refresh_expires": time.time() + 86400})
+    assert _authorize_calls(aioclient_mock) == 1
+    assert entry.data["psn_refresh_token"] == "refresh-2"
+    assert entry.data["psn_refresh_expires"] > time.time() + 50 * 86400
+    assert entry.data["psn_npsso"] == "gespeichert"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id)) is None
+    assert hass.states.get("sensor.ps5_123_trophy_level").state == "312"
+
+
+async def test_expired_token_rescued_by_npsso(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Erneuerungs-Token schon abgelaufen (HA lange aus): das NPSSO holt ein neues, keine Reparatur."""
+    mock_psn(aioclient_mock, token_status=400)
+    fresh = {"access_token": "acc", "expires_in": 3600, "refresh_token": "aus-npsso", "refresh_token_expires_in": 9e5}
+    with patch("custom_components.ps5.cloud.async_token_from_npsso", return_value=fresh) as renew:
+        entry = await _setup(hass, NPSSO_DATA)
+    renew.assert_awaited_once()
+    assert entry.data["psn_refresh_token"] == "aus-npsso"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id)) is None
+    assert hass.states.get("sensor.ps5_123_trophy_level").state == "312"
+
+
+async def test_npsso_rejected_asks_once(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Sony lehnt das gespeicherte NPSSO ab: Reparatur, die Cloud läuft bis zum Ablauf weiter, kein Dauerversuch."""
+    mock_psn(aioclient_mock, refresh_expires_in=86400)
+    aioclient_mock.get(psn.AUTHORIZE_URL, status=302, headers={"Location": "x://r?error=x"})
+    entry = await _setup(hass, {**NPSSO_DATA, "psn_refresh_expires": time.time() + 86400})
+    issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id))
+    assert issue is not None and issue.translation_key == "psn_token_expiring"
+    assert hass.states.get("sensor.ps5_123_trophy_level").state == "312"
+    await entry.runtime_data.psn.async_refresh()
+    assert _authorize_calls(aioclient_mock) == 1
+
+
+async def test_npsso_unreachable_retries(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Sony beim NPSSO-Tausch nicht erreichbar: nächste Runde wieder versuchen."""
+    mock_psn(aioclient_mock, refresh_expires_in=86400)
+    aioclient_mock.get(psn.AUTHORIZE_URL, exc=aiohttp.ClientError("weg"))
+    entry = await _setup(hass, {**NPSSO_DATA, "psn_refresh_expires": time.time() + 86400})
+    await entry.runtime_data.psn.async_refresh()
+    assert _authorize_calls(aioclient_mock) == 2
+    assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id(entry.entry_id)) is not None
 
 
 async def test_options_enable_and_disable(
@@ -207,9 +279,10 @@ async def test_options_enable_and_disable(
     )
     aioclient_mock.get(psn.ACCOUNT_URL, json={"accountId": ACCOUNT})
     result = await hass.config_entries.options.async_init(entry.entry_id)
-    result = await hass.config_entries.options.async_configure(result["flow_id"], {"npsso": "abc"})
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"npsso": '{"npsso":"abc"}'})
     assert result["type"] == "create_entry"
     await hass.async_block_till_done()
+    assert entry.data["psn_npsso"] == "abc"
     assert entry.data["psn_refresh_token"] in ("r1", "refresh-2")
     assert hass.states.get("sensor.ps5_123_trophy_level") is not None
 
@@ -217,6 +290,7 @@ async def test_options_enable_and_disable(
     result = await hass.config_entries.options.async_configure(result["flow_id"], {"disable_cloud": True})
     await hass.async_block_till_done()
     assert "psn_refresh_token" not in entry.data
+    assert "psn_npsso" not in entry.data
 
 
 async def test_options_errors(hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker) -> None:

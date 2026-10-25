@@ -146,8 +146,8 @@ async def async_account_id_for_token(session: aiohttp.ClientSession, access_toke
 class PSNClient:
     """Cloud-Teil nach der Einrichtung: hält das Zugriffstoken frisch und liefert Präsenz, Trophäen, Profil.
 
-    Gespeichert wird nur das Erneuerungs-Token. Sony gibt bei jeder Erneuerung ein neues mit; `on_new_token`
-    schreibt es zurück in den Konfigurationseintrag, damit HA immer das neueste hat.
+    Sony gibt bei jeder Erneuerung ein neues Erneuerungs-Token mit (Ablauf bleibt gleich); `on_new_token` schreibt
+    es zurück in den Konfigurationseintrag, damit HA immer das neueste hat. Neue Tokens per NPSSO holt cloud.py.
     """
 
     def __init__(
