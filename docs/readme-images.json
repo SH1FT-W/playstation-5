@@ -45,6 +45,18 @@
   "cards": {
     "new": [
       {
+        "icon": "cloud-outline",
+        "title": "Cloud in one go",
+        "ver": "26.11.1",
+        "text": "Paste the NPSSO token during setup and game, trophies and online status are on right away. No second trip to the options."
+      },
+      {
+        "icon": "autorenew",
+        "title": "Login renews itself",
+        "ver": "26.10.3",
+        "text": "Home Assistant keeps the NPSSO token and fetches a new refresh token by itself before Sony's 10 days run out. A repair only asks when Sony rejects the NPSSO."
+      },
+      {
         "icon": "power-sleep",
         "title": "Off stays off",
         "ver": "26.10.2",
@@ -55,18 +67,6 @@
         "title": "Diagnostics without secrets",
         "ver": "26.10.2",
         "text": "Pairing keys, PSN account ID, refresh token, IP and MAC address are redacted from the diagnostics download."
-      },
-      {
-        "icon": "rocket-launch-outline",
-        "title": "Starts without Sony",
-        "ver": "26.10.2",
-        "text": "Setup no longer waits for the PSN cloud or the update page, both load in the background. Re-pairing keeps the cloud settings."
-      },
-      {
-        "icon": "calendar-outline",
-        "title": "Calendar versions",
-        "ver": "26.10.1",
-        "text": "Year, month and the release of that month: 26.10.2 is the second release of October 2026. The jump from 1.2.3 is intended, updates show up as usual."
       }
     ],
     "features": [

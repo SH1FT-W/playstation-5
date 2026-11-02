@@ -144,6 +144,8 @@ class PS5Coordinator(DataUpdateCoordinator[PS5Data]):
                 await self._standby()
             except PS5AuthError:
                 self.config_entry.async_start_reauth(self.hass)
+                # The command failed for good: end the transition like after the last attempt
+                await self._end_transition()
                 return
             except PS5Error as err:
                 _LOGGER.debug("Ruhemodus-Wiederholung: %s", err)
@@ -151,6 +153,9 @@ class PS5Coordinator(DataUpdateCoordinator[PS5Data]):
             self._expect(STATE_REST)
             return
         _LOGGER.warning("PS5 hat den Ruhemodus-Befehl nach %s Versuchen nicht angenommen", len(RETRY_DELAYS) + 1)
-        # Übergang beenden: ab jetzt zählt wieder der echte Zustand
+        await self._end_transition()
+
+    async def _end_transition(self) -> None:
+        """Drop the expected state, from now on the console's real state counts again."""
         self._expected = None
         await self.async_request_refresh()

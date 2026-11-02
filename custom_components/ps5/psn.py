@@ -52,12 +52,6 @@ PRESENCE_URL = "https://m.np.playstation.com/api/userProfile/v2/internal/users/{
 TROPHY_URL = "https://m.np.playstation.com/api/trophy/v1/users/{account_id}/trophySummary"
 
 
-async def async_account_id(session: aiohttp.ClientSession, npsso: str) -> str:
-    """Nur die Konto-ID (Kopplung)."""
-    token = await async_token_from_npsso(session, npsso)
-    return await async_account_id_for_token(session, str(token["access_token"]))
-
-
 async def async_token_from_npsso(session: aiohttp.ClientSession, npsso: str) -> dict[str, Any]:
     """NPSSO → Token-Antwort (access_token, refresh_token, expires_in, refresh_token_expires_in)."""
     cid = str(uuid.uuid4())

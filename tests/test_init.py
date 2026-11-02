@@ -235,3 +235,23 @@ async def test_retry_stops_when_console_fully_off(
     await _refresh(hass, setup)
     await setup.runtime_data._standby_retry()
     assert console.calls == []
+
+
+async def test_retry_not_linked_starts_reauth(
+    hass: HomeAssistant, setup: MockConfigEntry, console: Console, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Link deleted on the PS5 while retrying rest mode: start reauth, stop retrying, show the real state again."""
+    monkeypatch.setattr("custom_components.ps5.coordinator.RETRY_DELAYS", (0, 0))
+    console.answer = status(True)
+    await _refresh(hass, setup)
+    console.standby_error = PS5Error("busy")
+    await hass.services.async_call("switch", "turn_off", {ATTR_ENTITY_ID: SW}, blocking=True)
+    console.standby_error = PS5AuthError("80108b02")
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert console.calls == ["standby", "standby"]  # no further attempt after the auth error
+    flows = hass.config_entries.flow.async_progress_by_handler(DOMAIN)
+    assert [f["context"]["source"] for f in flows] == [SOURCE_REAUTH]
+    assert not setup.runtime_data.retrying
+    # the command definitely failed: the console's real state counts again, without waiting 45 s
+    assert hass.states.get(SW).state == STATE_ON
+    assert hass.states.get(STATUS).attributes["changing"] is False

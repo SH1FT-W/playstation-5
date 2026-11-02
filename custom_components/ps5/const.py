@@ -16,6 +16,8 @@ CONF_PSN_EXPIRES = "psn_refresh_expires"
 # NPSSO der Cloud: hält ~2 Monate, damit holt die Integration selbst neue Erneuerungs-Tokens (die nur ~10 Tage halten)
 CONF_PSN_NPSSO = "psn_npsso"
 CONF_DISABLE_CLOUD = "disable_cloud"
+# Setup: also use the NPSSO entered for the account ID for the PSN cloud
+CONF_PSN_CLOUD = "psn_cloud"
 CONF_REGIST_KEY = "regist_key"
 CONF_RP_KEY = "rp_key"
 

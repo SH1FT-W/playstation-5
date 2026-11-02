@@ -1,5 +1,17 @@
 # Changelog
 
+## 26.11.1 – 02.11.2026
+
+- **New:** An NPSSO token pasted during setup also switches on the PSN cloud (game, trophies, online status) right
+  away, so it no longer has to be entered a second time in the options. A box (ticked by default) decides; untick it
+  and the token is only used to look up the account ID, as before. Existing entries and re-pairing stay unchanged.
+- **Fix:** If the PS5 no longer knows the link while rest mode is being retried in the background, Home Assistant
+  now shows the console's real state right away (besides starting the re-pairing); before, "off" stayed for up to
+  45 seconds and a wrong warning followed.
+- README: "New" cards include 26.10.3.
+- Tests: link deleted during the rest mode retries, cloud from setup (also across a PIN retry), re-pairing leaves the
+  cloud alone.
+
 ## 26.10.3 – 25.10.2026
 
 - **Fix:** The PSN cloud asked for a new NPSSO token every 3 days. Sony's refresh token runs out a fixed 10 days

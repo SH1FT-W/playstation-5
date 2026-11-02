@@ -14,14 +14,16 @@
       },
       "link": {
         "title": "{name} verknüpfen",
-        "description": "Öffne an der PS5 Einstellungen → System → Remote Play → Gerät verknüpfen und gib die 8-stellige PIN ein.\n\nPSN-Konto-ID: eintragen, wenn du sie kennst (Zahl). Sonst leer lassen und stattdessen ein NPSSO-Token einfügen: bei playstation.com anmelden, dann {sso_url} öffnen und den Wert hinter „npsso“ kopieren. Das Token dient nur einmal zum Nachschlagen der ID und wird nicht gespeichert.",
+        "description": "Öffne an der PS5 Einstellungen → System → Remote Play → Gerät verknüpfen und gib die 8-stellige PIN ein.\n\nPSN-Konto-ID: eintragen, wenn du sie kennst (Zahl). Sonst leer lassen und stattdessen ein NPSSO-Token einfügen: bei playstation.com anmelden, dann {sso_url} öffnen und den Wert hinter „npsso“ kopieren. Mit Häkchen schaltet das Token auch die optionale PSN-Cloud ein (Spiel, Trophäen, Online-Status) und bleibt in Home Assistant, damit sich die Anmeldung selbst erneuert. Ohne Häkchen dient es nur einmal zum Nachschlagen der ID und wird nicht gespeichert.",
         "data": {
           "account_id": "PSN-Konto-ID",
           "npsso": "NPSSO-Token (statt Konto-ID)",
-          "pin": "PIN"
+          "pin": "PIN",
+          "psn_cloud": "NPSSO-Token auch für die PSN-Cloud nutzen"
         },
         "data_description": {
-          "npsso": "64 Zeichen von {sso_url}, nachdem du bei playstation.com angemeldet bist."
+          "npsso": "64 Zeichen von {sso_url}, nachdem du bei playstation.com angemeldet bist.",
+          "psn_cloud": "Spiel, Trophäen und Online-Status. Lässt sich später in den Optionen wieder ausschalten."
         }
       },
       "reconfigure": {

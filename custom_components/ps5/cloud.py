@@ -180,6 +180,17 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
         return data
 
 
+def cloud_data(account_id: str, token: dict[str, Any], npsso: str) -> dict[str, Any]:
+    """Entry fields of the PSN cloud from a fresh NPSSO exchange (options, repair and initial setup)."""
+    expires_in = token.get("refresh_token_expires_in")
+    return {
+        CONF_PSN_ACCOUNT_ID: account_id,
+        CONF_PSN_TOKEN: token["refresh_token"],
+        CONF_PSN_EXPIRES: time.time() + float(expires_in) if expires_in else None,
+        CONF_PSN_NPSSO: clean_npsso(npsso),
+    }
+
+
 async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str) -> None:
     """NPSSO → Erneuerungs-Token + Konto-ID im Eintrag speichern und neu laden (Optionen und Reparatur).
 
@@ -188,14 +199,7 @@ async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str)
     session = async_get_clientsession(hass)
     token = await async_token_from_npsso(session, npsso)
     account_id = await async_account_id_for_token(session, str(token["access_token"]))
-    expires_in = token.get("refresh_token_expires_in")
-    data = {
-        **entry.data,
-        CONF_PSN_ACCOUNT_ID: account_id,
-        CONF_PSN_TOKEN: token["refresh_token"],
-        CONF_PSN_EXPIRES: time.time() + float(expires_in) if expires_in else None,
-        CONF_PSN_NPSSO: clean_npsso(npsso),
-    }
+    data = {**entry.data, **cloud_data(account_id, token, npsso)}
     hass.config_entries.async_update_entry(entry, data=data)
     ir.async_delete_issue(hass, DOMAIN, issue_id(entry.entry_id))
     hass.config_entries.async_schedule_reload(entry.entry_id)

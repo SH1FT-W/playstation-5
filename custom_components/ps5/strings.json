@@ -14,14 +14,16 @@
       },
       "link": {
         "title": "Link {name}",
-        "description": "On the PS5 open Settings → System → Remote Play → Link Device and enter the 8-digit PIN.\n\nPSN account ID: enter it if you know it (numeric). Otherwise leave it empty and paste an NPSSO token instead: sign in at playstation.com, then open {sso_url} and copy the value after \"npsso\". The token is only used once to look up the ID and is not stored.",
+        "description": "On the PS5 open Settings → System → Remote Play → Link Device and enter the 8-digit PIN.\n\nPSN account ID: enter it if you know it (numeric). Otherwise leave it empty and paste an NPSSO token instead: sign in at playstation.com, then open {sso_url} and copy the value after \"npsso\". With the box ticked the token also switches on the optional PSN cloud (game, trophies, online status) and stays in Home Assistant so the login renews itself. Untick it and the token is only used once to look up the ID and is not stored.",
         "data": {
           "account_id": "PSN account ID",
           "npsso": "NPSSO token (instead of the account ID)",
-          "pin": "PIN"
+          "pin": "PIN",
+          "psn_cloud": "Also use the NPSSO token for the PSN cloud"
         },
         "data_description": {
-          "npsso": "64 characters from {sso_url} after signing in at playstation.com."
+          "npsso": "64 characters from {sso_url} after signing in at playstation.com.",
+          "psn_cloud": "Game, trophies and online status. Can be switched off later in the options."
         }
       },
       "reconfigure": {

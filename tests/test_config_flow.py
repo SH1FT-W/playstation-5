@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import time
+from unittest.mock import patch
 
 from homeassistant.config_entries import SOURCE_DHCP, SOURCE_USER
 from homeassistant.core import HomeAssistant
@@ -135,7 +137,9 @@ def _mock_sony(aioclient_mock: AiohttpClientMocker, *, code: bool = True, accoun
         else "x://redirect?error=login_required&error_code=4165"
     )
     aioclient_mock.get(psn.AUTHORIZE_URL, status=302, headers={"Location": location})
-    aioclient_mock.post(psn.TOKEN_URL, json={"access_token": "tok"})
+    aioclient_mock.post(
+        psn.TOKEN_URL, json={"access_token": "tok", "refresh_token": "refresh-1", "refresh_token_expires_in": 864000}
+    )
     aioclient_mock.get(psn.ACCOUNT_URL, status=account_status, json={"accountId": "1234567890123456789"})
 
 
@@ -144,11 +148,12 @@ async def test_link_with_npsso(hass: HomeAssistant, console: Console, aioclient_
     flow_id = await _to_link(hass)
     # das ganze kopierte JSON geht auch
     result = await hass.config_entries.flow.async_configure(
-        flow_id, {"account_id": "", "npsso": '{"npsso":"' + "a" * 64 + '"}', "pin": "12345678"}
+        flow_id, {"account_id": "", "npsso": '{"npsso":"' + "a" * 64 + '"}', "psn_cloud": False, "pin": "12345678"}
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["data"]["account_id"] == "1234567890123456789"
-    assert "npsso" not in result["data"]  # nicht gespeichert
+    # box unticked: only the account ID, the token is not stored
+    assert not any(key.startswith("psn_") or key == "npsso" for key in result["data"])
     _method, _url, _data, headers = aioclient_mock.mock_calls[0]
     assert headers["Cookie"] == "npsso=" + "a" * 64
 
@@ -175,3 +180,57 @@ async def test_link_npsso_errors(hass: HomeAssistant, console: Console, aioclien
     assert result["errors"] == {"base": "link_failed"}
     default = next(k.default() for k in result["data_schema"].schema if k == "account_id")
     assert default == "1234567890123456789"
+
+
+async def test_link_npsso_enables_cloud(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """The NPSSO from setup also switches on the PSN cloud (box ticked by default), kept across a PIN retry."""
+    _mock_sony(aioclient_mock)
+    flow_id = await _to_link(hass)
+    result = await hass.config_entries.flow.async_configure(flow_id, {"pin": "1"})
+    default = next(k.default() for k in result["data_schema"].schema if k == "psn_cloud")
+    assert default is True
+    console.register_error = PS5AuthError("wrong PIN")
+    result = await hass.config_entries.flow.async_configure(flow_id, {"npsso": "b" * 64, "pin": "12345678"})
+    assert result["errors"] == {"base": "link_failed"}
+    console.register_error = None
+    aioclient_mock.clear_requests()  # the PIN retry does not ask Sony again
+    with patch("custom_components.ps5.async_setup_entry", return_value=True):
+        result = await hass.config_entries.flow.async_configure(
+            flow_id, {"account_id": "1234567890123456789", "pin": "12345678"}
+        )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    data = result["data"]
+    assert data["account_id"] == data["psn_account_id"] == "1234567890123456789"
+    assert data["psn_refresh_token"] == "refresh-1"
+    assert data["psn_npsso"] == "b" * 64
+    assert data["psn_refresh_expires"] > time.time() + 863000
+    assert "psn_cloud" not in data and "npsso" not in data
+    assert aioclient_mock.call_count == 0
+
+
+async def test_link_npsso_with_account_id_enables_cloud(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Account ID typed in and NPSSO pasted: the NPSSO still goes to the cloud."""
+    _mock_sony(aioclient_mock)
+    flow_id = await _to_link(hass)
+    with patch("custom_components.ps5.async_setup_entry", return_value=True):
+        result = await hass.config_entries.flow.async_configure(flow_id, {**LINK, "npsso": "c" * 64})
+    assert result["data"]["psn_npsso"] == "c" * 64
+
+
+async def test_reauth_keeps_cloud_untouched(
+    hass: HomeAssistant, aioclient_mock: AiohttpClientMocker, setup: MockConfigEntry, console: Console
+) -> None:
+    """Re-pairing never changes the cloud: no box, an NPSSO there only looks up the account ID."""
+    _mock_sony(aioclient_mock)
+    result = await setup.start_reauth_flow(hass)
+    assert not any(k == "psn_cloud" for k in result["data_schema"].schema)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"account_id": "", "npsso": "d" * 64, "pin": "12345678"}
+    )
+    assert result["reason"] == "reauth_successful"
+    assert not any(key.startswith("psn_") for key in setup.data)
+    await hass.async_block_till_done()

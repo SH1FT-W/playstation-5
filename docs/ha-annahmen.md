@@ -19,6 +19,7 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | `UpdateFailed(translation_domain=…, translation_key=…)` macht die Cloud-Entitäten nur nicht verfügbar, der lokale Coordinator läuft weiter | `cloud.py` `_async_update_data` | `test_token_expired_creates_repair` |
 | `entry.async_create_background_task` blockiert das Setup nicht (erste Cloud-Abfrage) | `__init__.py` | `test_setup_does_not_wait_for_cloud` |
 | `async_update_reload_and_abort(…, data_updates=…)` behält übrige Felder im Eintrag (PSN-Cloud bei Neukopplung) | `config_flow.py` Reauth | `tests/test_config_flow.py::test_reauth` |
+| `entry.async_start_reauth` aus einer Hintergrund-Aufgabe (Ruhemodus-Wiederholung) startet genau einen Reauth-Flow | `coordinator.py` `_standby_retry` | `tests/test_init.py::test_retry_not_linked_starts_reauth` |
 | DHCP-Erkennung über `manifest.json` `dhcp` (Hostname `ps5-*`, MAC-Präfix, `registered_devices`) | `config_flow.py` `async_step_dhcp` | `test_dhcp` |
 | `ImageEntity.__init__(self, hass)` muss von Hand aufgerufen werden (Mehrfachvererbung) | `image.py` | `test_cloud_values` |
 

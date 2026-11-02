@@ -14,12 +14,13 @@ from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 import voluptuous as vol
 
-from .cloud import SSO_URL, async_activate, deactivate
+from .cloud import SSO_URL, async_activate, cloud_data, deactivate
 from .const import (
     CONF_ACCOUNT_ID,
     CONF_DISABLE_CLOUD,
     CONF_NPSSO,
     CONF_PIN,
+    CONF_PSN_CLOUD,
     CONF_PSN_TOKEN,
     CONF_REGIST_KEY,
     CONF_RP_KEY,
@@ -34,7 +35,7 @@ from .protocol import (
     async_get_status,
     async_register,
 )
-from .psn import PSNError, PSNTokenError, async_account_id
+from .psn import PSNError, PSNTokenError, async_account_id_for_token, async_token_from_npsso
 
 _PIN = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.NUMBER))
 _SECRET = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD))
@@ -90,6 +91,8 @@ class PS5ConfigFlow(ConfigFlow, domain=DOMAIN):
         self._status: PS5Status | None = None
         self._found: dict[str, PS5Status] = {}
         self._account = ""
+        # PSN cloud fields from the NPSSO entered during setup; kept while the PIN is retried
+        self._cloud: dict[str, Any] = {}
 
     def _psn_account_id(self) -> str:
         """Konto-ID aus der PlayStation-Network-Integration vorschlagen (deren unique_id), falls vorhanden."""
@@ -149,15 +152,23 @@ class PS5ConfigFlow(ConfigFlow, domain=DOMAIN):
             account = str(user_input.get(CONF_ACCOUNT_ID) or "").strip()
             npsso = str(user_input.get(CONF_NPSSO) or "").strip()
             pin = str(user_input[CONF_PIN]).strip()
-            if not account and npsso:
+            # Only a new setup takes over the cloud; reauth keeps the entry's cloud fields as they are
+            use_cloud = self.source != "reauth" and bool(user_input.get(CONF_PSN_CLOUD, True))
+            if npsso and (not account or use_cloud):
                 try:
-                    account = await async_account_id(async_get_clientsession(self.hass), npsso)
+                    session = async_get_clientsession(self.hass)
+                    token = await async_token_from_npsso(session, npsso)
+                    psn_account = await async_account_id_for_token(session, str(token["access_token"]))
                 except PSNTokenError:
                     errors[CONF_NPSSO] = "invalid_npsso"
                 except PSNError:
                     errors["base"] = "psn_unreachable"
                 else:
-                    self._account = account  # bleibt im Formular stehen, falls die PIN noch nicht passt
+                    if "refresh_token" in token:
+                        self._cloud = cloud_data(psn_account, token, npsso)
+                    if not account:
+                        account = psn_account
+                        self._account = account  # bleibt im Formular stehen, falls die PIN noch nicht passt
             elif not account:
                 errors["base"] = "account_missing"
             if account and not errors:
@@ -184,18 +195,21 @@ class PS5ConfigFlow(ConfigFlow, domain=DOMAIN):
                     if self.source == "reauth":
                         # data_updates statt data: die PSN-Cloud-Felder im Eintrag bleiben erhalten
                         return self.async_update_reload_and_abort(self._get_reauth_entry(), data_updates=data)
+                    if use_cloud:
+                        data.update(self._cloud)
                     title = self._status.host_name if self._status else reg.nickname
                     return self.async_create_entry(title=title, data=data)
         account_default = self._account or self._psn_account_id()
+        fields: dict[vol.Marker, Any] = {
+            vol.Optional(CONF_ACCOUNT_ID, default=account_default): str,
+            vol.Optional(CONF_NPSSO): _SECRET,
+        }
+        if self.source != "reauth":
+            fields[vol.Optional(CONF_PSN_CLOUD, default=True)] = bool
+        fields[vol.Required(CONF_PIN)] = _PIN
         return self.async_show_form(
             step_id="link",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(CONF_ACCOUNT_ID, default=account_default): str,
-                    vol.Optional(CONF_NPSSO): _SECRET,
-                    vol.Required(CONF_PIN): _PIN,
-                }
-            ),
+            data_schema=vol.Schema(fields),
             description_placeholders={
                 "name": self._status.host_name if self._status else "PS5",
                 "sso_url": SSO_URL,
