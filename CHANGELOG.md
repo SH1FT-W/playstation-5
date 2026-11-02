@@ -5,11 +5,19 @@
 - **New:** An NPSSO token pasted during setup also switches on the PSN cloud (game, trophies, online status) right
   away, so it no longer has to be entered a second time in the options. A box (ticked by default) decides; untick it
   and the token is only used to look up the account ID, as before. Existing entries and re-pairing stay unchanged.
+- **New:** Play time sensors for parental limits: "Play time today" and "Play time this week" (from Monday) in
+  minutes, counted locally from the time the console is on, so they also work without the cloud. With the PSN
+  cloud there is also "Play time in game today", and the attribute `games` lists the minutes per game. A session
+  that runs over midnight is split at midnight (Home Assistant's time zone), the counters survive restarts, and the
+  time Home Assistant itself is down is not counted.
 - **Fix:** If the PS5 no longer knows the link while rest mode is being retried in the background, Home Assistant
   now shows the console's real state right away (besides starting the re-pairing); before, "off" stayed for up to
   45 seconds and a wrong warning followed.
-- README: "New" cards include 26.10.3.
-- Tests: link deleted during the rest mode retries, cloud from setup (also across a PIN retry), re-pairing leaves the
+- README: "New" cards include 26.10.3 and play time, example automation for a daily limit; the project page shows
+  the current version and news.
+- Tests: play time (only while on, real state during a rest mode command, midnight split, midnight without a poll,
+  new week on Monday, long gaps, restart on the same and a later day, clock behind at boot, in game with the PSN
+  cloud), link deleted during the rest mode retries, cloud from setup (also across a PIN retry), re-pairing leaves the
   cloud alone.
 
 ## 26.10.3 – 25.10.2026

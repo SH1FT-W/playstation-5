@@ -45,6 +45,12 @@
   "cards": {
     "new": [
       {
+        "icon": "timer-outline",
+        "title": "Play time for parents",
+        "ver": "26.11.1",
+        "text": "Minutes the console was on today and this week (from Monday), counted locally and kept across restarts. With the PSN cloud also the time in a game, per game. Made for limits in automations."
+      },
+      {
         "icon": "cloud-outline",
         "title": "Cloud in one go",
         "ver": "26.11.1",
@@ -61,12 +67,6 @@
         "title": "Off stays off",
         "ver": "26.10.2",
         "text": "If the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing off. Fully switched off meanwhile? It stops at once."
-      },
-      {
-        "icon": "shield-lock-outline",
-        "title": "Diagnostics without secrets",
-        "ver": "26.10.2",
-        "text": "Pairing keys, PSN account ID, refresh token, IP and MAC address are redacted from the diagnostics download."
       }
     ],
     "features": [
@@ -86,6 +86,11 @@
         "text": "Name, title ID and cover in the game sensor, the media player and an image entity (with the optional PSN cloud)."
       },
       {
+        "icon": "timer-outline",
+        "title": "Play time",
+        "text": "Today and this week, split cleanly at midnight even mid-session, with the games played. Local, so it also works without the cloud."
+      },
+      {
         "icon": "trophy-outline",
         "title": "Trophies and profile",
         "text": "Trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID."
@@ -103,7 +108,7 @@
       {
         "icon": "key-outline",
         "title": "Your login stays local",
-        "text": "NPSSO and refresh token stay in Home Assistant and only go to Sony's login servers. A repair asks for a new token 7 days before expiry."
+        "text": "NPSSO and refresh token stay in Home Assistant and only go to Sony's login servers. The login renews itself; a repair only asks when Sony rejects the NPSSO."
       },
       {
         "icon": "translate",
@@ -126,6 +131,11 @@
         "icon": "information-outline",
         "title": "Status and game",
         "text": "status (on, rest mode, off, attribute changing during a command) and game (attribute title_id)."
+      },
+      {
+        "icon": "timer-outline",
+        "title": "Play time",
+        "text": "play_time_today and play_time_this_week in minutes (attribute games), play_time_in_game_today with the PSN cloud."
       },
       {
         "icon": "update",

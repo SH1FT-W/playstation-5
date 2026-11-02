@@ -104,6 +104,36 @@
       },
       "psn_token_expires": {
         "name": "PSN login expires"
+      },
+      "playtime_today": {
+        "name": "Play time today",
+        "state_attributes": {
+          "games": {
+            "name": "Games"
+          },
+          "in_game": {
+            "name": "In game"
+          }
+        }
+      },
+      "playtime_week": {
+        "name": "Play time this week",
+        "state_attributes": {
+          "games": {
+            "name": "Games"
+          },
+          "in_game": {
+            "name": "In game"
+          }
+        }
+      },
+      "playtime_game_today": {
+        "name": "Play time in game today",
+        "state_attributes": {
+          "games": {
+            "name": "Games"
+          }
+        }
       }
     },
     "binary_sensor": {

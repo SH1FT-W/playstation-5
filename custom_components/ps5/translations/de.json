@@ -104,6 +104,36 @@
       },
       "psn_token_expires": {
         "name": "PSN-Anmeldung läuft ab"
+      },
+      "playtime_today": {
+        "name": "Spielzeit heute",
+        "state_attributes": {
+          "games": {
+            "name": "Spiele"
+          },
+          "in_game": {
+            "name": "Im Spiel"
+          }
+        }
+      },
+      "playtime_week": {
+        "name": "Spielzeit diese Woche",
+        "state_attributes": {
+          "games": {
+            "name": "Spiele"
+          },
+          "in_game": {
+            "name": "Im Spiel"
+          }
+        }
+      },
+      "playtime_game_today": {
+        "name": "Spielzeit (im Spiel) heute",
+        "state_attributes": {
+          "games": {
+            "name": "Spiele"
+          }
+        }
       }
     },
     "binary_sensor": {

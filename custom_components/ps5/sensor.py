@@ -13,7 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, EntityCategory
+from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
@@ -22,6 +22,7 @@ from homeassistant.util import dt as dt_util
 from .cloud import PSNCoordinator, PSNData
 from .coordinator import STATE_OFF, STATE_ON, STATE_REST, PS5ConfigEntry, PS5Coordinator
 from .entity import PS5Entity, PSNEntity
+from .playtime import Period, PlayTimeTracker, games_minutes, minutes
 
 PARALLEL_UPDATES = 0
 
@@ -31,7 +32,13 @@ async def async_setup_entry(
 ) -> None:
     coordinator = entry.runtime_data
     entities: list[SensorEntity] = [PS5StatusSensor(coordinator), PS5GameSensor(coordinator)]
+    tracker = coordinator.playtime
+    entities += [
+        PlayTimeSensor(coordinator, tracker, "playtime_today", week=False, in_game=False),
+        PlayTimeSensor(coordinator, tracker, "playtime_week", week=True, in_game=False),
+    ]
     if coordinator.psn:
+        entities.append(PlayTimeSensor(coordinator, tracker, "playtime_game_today", week=False, in_game=True))
         entities += [PSNSensor(coordinator, coordinator.psn, d) for d in PSN_SENSORS]
         entities.append(PSNTokenExpirySensor(coordinator, coordinator.psn, "psn_token_expires"))
     async_add_entities(entities)
@@ -165,3 +172,49 @@ class PSNTokenExpirySensor(PSNEntity, SensorEntity):
     @property
     def native_value(self) -> datetime | None:
         return _expires(self.coordinator)
+
+
+class PlayTimeSensor(PS5Entity, SensorEntity):
+    """Minutes the console was on (or a game ran) today / this week, for limits in parent automations."""
+
+    _attr_device_class = SensorDeviceClass.DURATION
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
+    # Counter that starts again at midnight / Monday: total with last_reset
+    _attr_state_class = SensorStateClass.TOTAL
+    _attr_suggested_display_precision = 0
+
+    def __init__(
+        self, coordinator: PS5Coordinator, tracker: PlayTimeTracker, key: str, *, week: bool, in_game: bool
+    ) -> None:
+        super().__init__(coordinator, key)
+        self._tracker = tracker
+        self._week = week
+        self._in_game = in_game
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self._tracker.async_add_listener(self.async_write_ha_state))
+
+    def _handle_coordinator_update(self) -> None:
+        """The tracker counts first and then updates this sensor, so the poll itself has nothing to write."""
+
+    @property
+    def _period(self) -> Period:
+        return self._tracker.week if self._week else self._tracker.day
+
+    @property
+    def native_value(self) -> int:
+        period = self._period
+        return minutes(period.in_game if self._in_game else period.on)
+
+    @property
+    def last_reset(self) -> datetime:
+        return dt_util.start_of_local_day(self._period.start)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        period = self._period
+        attrs: dict[str, Any] = {"games": games_minutes(period.games)}
+        if not self._in_game and self.coordinator.psn:
+            attrs["in_game"] = minutes(period.in_game)
+        return attrs

@@ -19,6 +19,7 @@ from .protocol import PS5AuthError, PS5Error, PS5Status, async_get_status, async
 
 if TYPE_CHECKING:
     from .cloud import PSNCoordinator
+    from .playtime import PlayTimeTracker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,6 +64,8 @@ class PS5Coordinator(DataUpdateCoordinator[PS5Data]):
         self._retry_task: asyncio.Task[None] | None = None
         # Optionaler Cloud-Teil (Spiel, Trophäen …), None = nicht eingerichtet
         self.psn: PSNCoordinator | None = None
+        # Play time today / this week, set up in async_setup_entry
+        self.playtime: PlayTimeTracker
 
     @property
     def host(self) -> str:

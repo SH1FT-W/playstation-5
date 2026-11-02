@@ -51,6 +51,15 @@
       },
       "psn_token_expires": {
         "default": "mdi:key-chain"
+      },
+      "playtime_today": {
+        "default": "mdi:timer-outline"
+      },
+      "playtime_week": {
+        "default": "mdi:calendar-week"
+      },
+      "playtime_game_today": {
+        "default": "mdi:timer-play-outline"
       }
     },
     "binary_sensor": {
