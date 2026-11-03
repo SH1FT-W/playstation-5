@@ -10,7 +10,7 @@ Fully local, game and trophies optional.</p>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fplaystation-5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/playstation-5/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0070D1?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![HACS](https://img.shields.io/badge/HACS-custom%20repository-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-custom%20repository-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-local%20polling-0070D1?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-platinum%20(self--assessed)-0070D1?style=flat-square&labelColor=111111)](custom_components/ps5/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-GPLv3-0070D1?style=flat-square&labelColor=111111)](LICENSE)
@@ -97,9 +97,11 @@ image.playstation_5_game_cover             image.playstation_5_avatar
 
 ## Installation
 
-### HACS (custom repository)
+### Marketplace (custom repository)
 
-1. In HACS, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
+The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
+
+1. In the Marketplace, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
 2. Search for **PlayStation 5**, download it and restart Home Assistant.
 
 ### Manual
@@ -193,7 +195,7 @@ When you open an [issue](https://github.com/SH1FT-W/playstation-5/issues), pleas
 
 1. **Settings > Devices & services > PlayStation 5 > three dots > Delete**.
 2. On the PS5, remove the paired device under **Settings > System > Remote Play**.
-3. Delete the folder `/config/custom_components/ps5` (or remove the repository in HACS) and restart Home Assistant.
+3. Delete the folder `/config/custom_components/ps5` (or remove the repository in the Marketplace) and restart Home Assistant.
 
 ## How it works
 
