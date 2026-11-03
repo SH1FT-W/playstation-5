@@ -97,12 +97,15 @@ image.playstation_5_game_cover             image.playstation_5_avatar
 
 ## Installation
 
-### Marketplace (custom repository)
+### Marketplace
 
 The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
 
-1. In the Marketplace, open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
-2. Search for **PlayStation 5**, download it and restart Home Assistant.
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=playstation-5&category=integration)
+
+1. In the Marketplace, search for **PlayStation 5** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
+
+Not in the search yet? Then add it as a custom repository first: in the Marketplace open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
 
 ### Manual
 
