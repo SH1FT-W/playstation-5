@@ -1,6 +1,6 @@
 # Changelog
 
-## 26.11.2 – unreleased
+## 26.11.2 – 04.11.2026
 
 - **Fix:** Turning the console on while rest mode is still being retried in the background (after the PS5 refused
   it) now stops those retries. Before, the next retry put the console back to sleep within up to 210 seconds
