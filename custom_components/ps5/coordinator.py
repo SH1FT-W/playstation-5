@@ -100,6 +100,10 @@ class PS5Coordinator(DataUpdateCoordinator[PS5Data]):
         self.async_set_updated_data(PS5Data(state=state, status=current, transition=True))
 
     async def async_turn_on(self) -> None:
+        # "On" wins over a pending rest mode retry, otherwise its next attempt would put the console to sleep again
+        if self._retry_task is not None:
+            self._retry_task.cancel()
+            self._retry_task = None
         if self.data and self.data.is_on:
             return
         try:

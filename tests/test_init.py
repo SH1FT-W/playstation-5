@@ -255,3 +255,21 @@ async def test_retry_not_linked_starts_reauth(
     # the command definitely failed: the console's real state counts again, without waiting 45 s
     assert hass.states.get(SW).state == STATE_ON
     assert hass.states.get(STATUS).attributes["changing"] is False
+
+
+async def test_turn_on_cancels_retry_chain(
+    hass: HomeAssistant, setup: MockConfigEntry, console: Console, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Turned on again while rest mode is being retried: the chain stops and does not send rest mode again."""
+    monkeypatch.setattr("custom_components.ps5.coordinator.RETRY_DELAYS", (0.05, 0.05))
+    console.answer = status(True)
+    await _refresh(hass, setup)
+    console.standby_error = PS5Error("busy")
+    await hass.services.async_call("switch", "turn_off", {ATTR_ENTITY_ID: SW}, blocking=True)
+    assert setup.runtime_data.retrying
+    console.standby_error = None  # the next retry would succeed and put the console to sleep
+    await hass.services.async_call("switch", "turn_on", {ATTR_ENTITY_ID: SW}, blocking=True)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert console.calls == ["standby", "wakeup"]
+    assert not setup.runtime_data.retrying
+    assert hass.states.get(SW).state == STATE_ON

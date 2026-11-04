@@ -1,5 +1,12 @@
 # Changelog
 
+## 26.11.2 – unreleased
+
+- **Fix:** Turning the console on while rest mode is still being retried in the background (after the PS5 refused
+  it) now stops those retries. Before, the next retry put the console back to sleep within up to 210 seconds
+  (HACS review hacs/default#13227).
+- Tests: turning on during the rest mode retries.
+
 ## 26.11.1 – 02.11.2026
 
 - **New:** An NPSSO token pasted during setup also switches on the PSN cloud (game, trophies, online status) right
