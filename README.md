@@ -10,7 +10,7 @@ Fully local, game and trophies optional.</p>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fplaystation-5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/playstation-5/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0070D1?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![Marketplace](https://img.shields.io/badge/Marketplace-custom%20repository-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-default-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-local%20polling-0070D1?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-platinum%20(self--assessed)-0070D1?style=flat-square&labelColor=111111)](custom_components/ps5/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-GPLv3-0070D1?style=flat-square&labelColor=111111)](LICENSE)
@@ -104,8 +104,6 @@ The Marketplace is under Settings → Marketplace. On Home Assistant before 2026
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=playstation-5&category=integration)
 
 1. In the Marketplace, search for **PlayStation 5** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
-
-Not in the search yet? Then add it as a custom repository first: in the Marketplace open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/playstation-5` with the type **Integration**.
 
 ### Manual
 
