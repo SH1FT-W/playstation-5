@@ -1,5 +1,5 @@
 {
-  "$comment": "Colours and fonts of the README pictures; the README no longer uses card sets. The title image comes from docs/readme-title.html (photo docs/images/readme-photo.webp, AI-generated), rendered with headless Chrome at 1280x640, scale 2, ?theme=light and ?theme=dark.",
+  "$comment": "Content of the README title image. Render with sh1ft-w.github.io/theme/v1/readme-images (node render.mjs <this repo> title). The window shows docs/images/title-shot-{light,dark}.png: the section \"On, off and everything between\" of docs/index.html with the Local / With PSN login table, taken with playwright at 1600 px width, device scale 2, ?still&theme=light|dark, clip x 208, y 2290, 1184 x 840. The README has no card sets.",
   "colors": {
     "light": {
       "bg": "#F4F6FA",
@@ -64,18 +64,18 @@
     "shot": {
       "light": "docs/images/title-shot-light.png",
       "dark": "docs/images/title-shot-dark.png",
-      "srcW": 3200,
-      "winW": 3200,
+      "srcW": 2368,
+      "winW": 2368,
       "s": 0.28,
       "strips": [
         [
           0,
-          2000
+          1680
         ]
       ],
       "bar": "Home Assistant › PlayStation 5",
-      "left": 600,
-      "top": 70
+      "left": 590,
+      "top": 80
     }
   }
 }
