@@ -5,137 +5,90 @@
   <img src="docs/images/readme-title-light.webp" alt="PlayStation 5: Your PS5, fully local. The feature overview of the project page in a window." />
 </picture>
 
-<p>Status, wake-up and rest mode for the PS5 in Home Assistant.<br/>
-Fully local, game and trophies optional.</p>
-
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fplaystation-5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/playstation-5/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0070D1?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-default-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
-[![IoT class](https://img.shields.io/badge/iot-local%20polling-0070D1?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
-[![Quality scale](https://img.shields.io/badge/quality%20scale-platinum%20(self--assessed)-0070D1?style=flat-square&labelColor=111111)](custom_components/ps5/quality_scale.yaml)
-[![License](https://img.shields.io/badge/license-GPLv3-0070D1?style=flat-square&labelColor=111111)](LICENSE)
 
-<p><a href="https://sh1ft-w.github.io/playstation-5"><b>Website</b></a> &nbsp;·&nbsp; <a href="#new">New</a> &nbsp;·&nbsp; <a href="#features">Features</a> &nbsp;·&nbsp; <a href="#entities">Entities</a> &nbsp;·&nbsp; <a href="#installation">Install</a> &nbsp;·&nbsp; <a href="#privacy">Privacy</a> &nbsp;·&nbsp; <a href="#troubleshooting">Troubleshooting</a> &nbsp;·&nbsp; <a href="CHANGELOG.md">Changelog</a></p>
+<a href="https://sh1ft-w.github.io/playstation-5"><b>Website</b></a>&emsp;<a href="#install">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>
 
 </div>
 
 <br/>
 
-PlayStation 5 brings the **PS5** into Home Assistant over the same local protocols the PS App and Remote Play use at home: status, wake-up and rest mode **without cloud, MQTT or an extra app**. The current game, trophies and online status come optionally from the PlayStation Network, because the PS5 does not report the running game on the local network.
+Your PS5 in Home Assistant, the way the PS App sees it at home: **on, rest mode or off, wake it up, send it to sleep.** Straight over your network, without cloud, MQTT or an extra app.
 
-> [!NOTE]
-> PlayStation 5 is an independent project. It is not affiliated with, endorsed by or sponsored by Sony Interactive Entertainment. PlayStation, PS5 and PlayStation Network are trademarks or registered trademarks of Sony Interactive Entertainment Inc.
+The PS5 does not tell the local network which game is running. If you want the game, trophies and online status too, add your PlayStation Network login. Control never goes through it.
 
-<br/>
+## Local or with the PSN cloud
 
-<a id="new"></a>
-<sub><b>JUST ARRIVED</b></sub>
-## Play time for parents, the cloud in one go.
+|  | Local | With PSN login |
+|:--|:--:|:--:|
+| On, rest mode or off, every 5 seconds | ✓ | ✓ |
+| Wake up (about 5 seconds) and rest mode | ✓ | ✓ |
+| Play time today and this week | ✓ | ✓ |
+| System software update available | ✓ | ✓ |
+| Current game with cover | | ✓ |
+| Play time per game | | ✓ |
+| Trophies, online status, PS Plus, avatar | | ✓ |
 
-<!-- cards:new -->
-<table>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/timer-outline-dark.svg"><img src="docs/images/icons/timer-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Play time for parents</b> <code>26.11.1</code><br>Minutes the console was on today and this week (from Monday), counted locally and kept across restarts. With the PSN cloud also the time in a game, per game. Made for limits in automations.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/cloud-outline-dark.svg"><img src="docs/images/icons/cloud-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Cloud in one go</b> <code>26.11.1</code><br>Paste the NPSSO token during setup and game, trophies and online status are on right away. No second trip to the options.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/autorenew-dark.svg"><img src="docs/images/icons/autorenew-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Login renews itself</b> <code>26.10.3</code><br>Home Assistant keeps the NPSSO token and fetches a new refresh token by itself before Sony's 10 days run out. A repair only asks when Sony rejects the NPSSO.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/power-sleep-dark.svg"><img src="docs/images/icons/power-sleep-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Off stays off</b> <code>26.10.2</code><br>If the PS5 does not accept rest mode right away, Home Assistant retries in the background for up to 210 seconds and keeps showing off. Fully switched off meanwhile? It stops at once.</td></tr>
-</table>
-<!-- /cards:new -->
+**New in 26.11:** play time sensors for daily limits, and the PSN login can be switched on right in setup. Every change is in the [changelog](CHANGELOG.md).
 
-Every change, release by release, in the [changelog](CHANGELOG.md).
+<a id="install"></a>
+## Install
 
-<a id="features"></a>
-## Features
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=playstation-5&category=integration)
 
-<!-- cards:features -->
-<table>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/power-dark.svg"><img src="docs/images/icons/power-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Wake up and rest mode</b><br>A media player and a power switch. Wake-up takes about five seconds, rest mode goes over a short Remote Play session.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/sony-playstation-dark.svg"><img src="docs/images/icons/sony-playstation-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>On, rest mode or off</b><br>A status sensor tells all three apart, every five seconds, without pairing. A silent console counts as off, not as an error.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gamepad-variant-outline-dark.svg"><img src="docs/images/icons/gamepad-variant-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Current game</b><br>Name, title ID and cover in the game sensor, the media player and an image entity (with the optional PSN cloud).</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/timer-outline-dark.svg"><img src="docs/images/icons/timer-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Play time</b><br>Today and this week, split cleanly at midnight even mid-session, with the games played. Local, so it also works without the cloud.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/trophy-outline-dark.svg"><img src="docs/images/icons/trophy-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Trophies and profile</b><br>Trophy level and progress, platinum to bronze, online status, last online, PS Plus, avatar and online ID.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/update-dark.svg"><img src="docs/images/icons/update-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>System software</b><br>An update entity compares the installed version with the latest one on Sony's update page, with release notes.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/magnify-dark.svg"><img src="docs/images/icons/magnify-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Finds itself</b><br>Discovered by DHCP host name or Sony MAC address, follows IP changes and pairs with the 8-digit PIN from the console.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/key-outline-dark.svg"><img src="docs/images/icons/key-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Your login stays local</b><br>NPSSO and refresh token stay in Home Assistant and only go to Sony's login servers. The login renews itself; a repair only asks when Sony rejects the NPSSO.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/translate-dark.svg"><img src="docs/images/icons/translate-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>English and German</b><br>Entity names, setup, repairs and error messages in both languages. Self-assessed against the Integration Quality Scale.</td></tr>
-</table>
-<!-- /cards:features -->
+Search for **PlayStation 5** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
 
-After switching on or off, Home Assistant shows the target state right away and waits up to 45 seconds for the console to confirm it. If the PS5 does not accept rest mode yet (shortly after waking up it reports "Remote Play busy" for about a minute), Home Assistant retries in the background after 20, 40, 60 and 90 seconds and keeps the target state meanwhile.
+<details>
+<summary>Install by hand</summary>
 
-The entities never become "unavailable": a console that does not answer is fully off or not on the network, so it counts as **off**, not as an error. Only the optional cloud entities are unavailable without a connection to Sony.
+1. Download the [latest release](https://github.com/SH1FT-W/playstation-5/releases/latest).
+2. Copy `custom_components/ps5` into `/config/custom_components/` and restart Home Assistant.
+
+</details>
+
+<a id="set-up"></a>
+## Set up
+
+Before you start, check three switches on the PS5: **Enable Remote Play**, and under **Power Saving > Features Available in Rest Mode** both **Stay Connected to the Internet** and **Enable Turning On PS5 from Network**. Without them it cannot be woken.
+
+1. **Add the console.** It usually shows up under **Settings > Devices & services > Discovered**. If not, choose **Add integration > PlayStation 5**. It has to be on or in rest mode.
+2. **Pair it.** On the PS5 open **Settings > System > Remote Play > Pair device** and enter the 8-digit PIN in Home Assistant.
+3. **Your PSN account.** Enter the account ID if you know it (it is filled in when the PlayStation Network integration is set up). Otherwise paste an NPSSO token: sign in at playstation.com, open https://ca.account.sony.com/api/v1/ssocookie and copy the value after `npsso`. Leave **Also use the NPSSO token for the PSN cloud** ticked to switch on game, trophies and online status right away.
+
+You can add the PSN login later under **three dots > Configure**. A new IP address is picked up by itself; if not, use **three dots > Reconfigure**.
 
 <a id="entities"></a>
 ## Entities
 
-<!-- cards:entities -->
-<table>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/television-play-dark.svg"><img src="docs/images/icons/television-play-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Media player</b><br>media_player.playstation_5: playing (with game and cover), on or off; switch on and off.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/toggle-switch-outline-dark.svg"><img src="docs/images/icons/toggle-switch-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Power switch</b><br>switch.playstation_5_power: on = running, off = rest mode. Handy for automations, for example switching the TV input.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/information-outline-dark.svg"><img src="docs/images/icons/information-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Status and game</b><br>status (on, rest mode, off, attribute changing during a command) and game (attribute title_id).</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/timer-outline-dark.svg"><img src="docs/images/icons/timer-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Play time</b><br>play_time_today and play_time_this_week in minutes (attribute games), play_time_in_game_today with the PSN cloud.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/update-dark.svg"><img src="docs/images/icons/update-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>System software</b><br>update.playstation_5_system_software: installed against Sony's latest version. The PS5 installs it itself in rest mode.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/trophy-outline-dark.svg"><img src="docs/images/icons/trophy-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>PSN cloud sensors</b><br>online_status, last_online, online_id, trophy_level, trophy_level_progress, platinum to bronze trophies, psn_login_expires.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/image-outline-dark.svg"><img src="docs/images/icons/image-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Images and PS Plus</b><br>game_cover and avatar as image entities, playstation_plus as a binary sensor. Only with the optional cloud.</td></tr>
-</table>
-<!-- /cards:entities -->
+IDs for a console named "PlayStation 5". Names are in English and German.
 
-All IDs start with the device name, for example `switch.playstation_5_power`. Entity names are available in English and German.
+| Entity | Shows |
+|:--|:--|
+| `media_player.playstation_5` | Playing (with game and cover), on or off. Switches on and off. |
+| `switch.playstation_5_power` | On = running, off = rest mode. The one for automations. |
+| `sensor.playstation_5_status` | On, rest mode or off. A console that does not answer counts as off, never as an error. |
+| `sensor.playstation_5_play_time_today`<br>`sensor.playstation_5_play_time_this_week` | Minutes the console was on. Today from midnight, the week from Monday. Kept across restarts. |
+| `update.playstation_5_system_software` | Installed version against Sony's latest, with release notes. |
 
 <details>
-<summary>All entity IDs (for a console named "PlayStation 5")</summary>
+<summary>With the PSN login (12 more)</summary>
 
-```
-media_player.playstation_5
-switch.playstation_5_power
-sensor.playstation_5_status                sensor.playstation_5_game
-sensor.playstation_5_play_time_today       sensor.playstation_5_play_time_this_week
-update.playstation_5_system_software
-
-# optional PSN cloud
-sensor.playstation_5_play_time_in_game_today
-sensor.playstation_5_online_status         sensor.playstation_5_last_online
-sensor.playstation_5_online_id             sensor.playstation_5_psn_login_expires
-sensor.playstation_5_trophy_level          sensor.playstation_5_trophy_level_progress
-sensor.playstation_5_platinum_trophies     sensor.playstation_5_gold_trophies
-sensor.playstation_5_silver_trophies       sensor.playstation_5_bronze_trophies
-binary_sensor.playstation_5_playstation_plus
-image.playstation_5_game_cover             image.playstation_5_avatar
-```
+| Entity | Shows |
+|:--|:--|
+| `sensor.playstation_5_game` | Current game, attribute `title_id` |
+| `sensor.playstation_5_play_time_in_game_today` | Minutes in a game today, attribute `games` per game |
+| `sensor.playstation_5_online_status`, `_last_online`, `_online_id` | Your PSN profile |
+| `sensor.playstation_5_trophy_level`, `_trophy_level_progress` | Trophy level |
+| `sensor.playstation_5_platinum_trophies`, `_gold_`, `_silver_`, `_bronze_trophies` | Trophy counts |
+| `sensor.playstation_5_psn_login_expires` | When the current login token runs out |
+| `binary_sensor.playstation_5_playstation_plus` | PS Plus active |
+| `image.playstation_5_game_cover`, `image.playstation_5_avatar` | Cover and avatar |
 
 </details>
 
-## Installation
-
-### Marketplace
-
-The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
-
-[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=playstation-5&category=integration)
-
-1. In the Marketplace, search for **PlayStation 5** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
-
-### Manual
-
-1. Download the [latest release](https://github.com/SH1FT-W/playstation-5/releases/latest).
-2. Copy the folder `custom_components/ps5` into `/config/custom_components/` and restart Home Assistant.
-
-Requires Home Assistant 2026.9 or newer.
-
-## Setup
-
-1. The console is usually discovered automatically (**Settings > Devices & services > Discovered**), by its DHCP host name `PS5-…`, its Sony MAC address or the hourly network scan. Otherwise choose **Add integration > PlayStation 5** and pick it from the list or enter its IP address. It has to be on or in rest mode.
-2. On the PS5 open **Settings > System > Remote Play > Pair device** and enter the PIN shown there.
-3. **PSN account ID**, three ways:
-   - you know it: enter it as a number;
-   - the PlayStation Network integration is set up: it is filled in already;
-   - otherwise an **NPSSO token**: sign in at playstation.com, open https://ca.account.sony.com/api/v1/ssocookie and copy the value after `npsso` (or the whole line). Home Assistant looks up the account ID with it. With **Also use the NPSSO token for the PSN cloud** ticked (the default) it also switches on game, trophies and online status right away; untick it and the token is used once and not stored.
-4. Optional, for game, trophies and online status (if you did not already paste an NPSSO token with the box ticked in step 3): **three dots > Configure** and paste an NPSSO token.
-
-> [!TIP]
-> On the PS5, **Enable Remote Play** has to be on, and under **Power Saving > Features Available in Rest Mode** both **Stay Connected to the Internet** and **Enable Turning On PS5 from Network**. Otherwise it cannot be woken from rest mode.
-
-If the console gets a new IP address later, use **three dots > Reconfigure** (known consoles are also found again by DHCP).
-
-<a id="privacy"></a>
-## Privacy
-
-- **Control is local.** Status, wake-up and rest mode go straight between Home Assistant and the console. Nothing passes through a cloud.
-- **Your PSN login stays in Home Assistant.** An NPSSO token entered during setup with the cloud box unticked only looks up the account ID and is not stored. For the optional cloud, Home Assistant keeps the NPSSO token and a refresh token in its own config entry. Sony's refresh token runs out a fixed 10 days after it was issued, so Home Assistant uses the stored NPSSO to fetch a new one 3 days before. Tokens are sent to Sony's own login and PSN servers only, never anywhere else.
-- **Diagnostics redact secrets.** Pairing keys, NPSSO and refresh tokens, account IDs, IP and MAC address are left out of the diagnostics download.
-- **Expiry is visible.** The sensor "PSN login expires" shows when the current refresh token runs out; it moves on by itself with every renewal. Only when Sony rejects the stored NPSSO (it lasts about two months, or until you sign out at Sony) does a repair with an input field for a new token appear. Logins set up before 26.10.3 have no stored NPSSO yet: the repair shows up once more, after that it renews itself.
-
-## Example
+## Examples
 
 Switch the TV to the console's input when the PS5 starts:
 
@@ -152,7 +105,8 @@ actions:
       source: HDMI 2
 ```
 
-Send the console to rest mode once it has been on for two hours today:
+<details>
+<summary>Rest mode after two hours a day</summary>
 
 ```yaml
 triggers:
@@ -165,23 +119,28 @@ actions:
       entity_id: switch.playstation_5_power
 ```
 
+</details>
+
+## Your data
+
+- **Control stays at home.** Status, wake-up and rest mode go straight between Home Assistant and the console.
+- **Your PSN login stays in Home Assistant** and is only sent to Sony's own servers. Sony's token runs out after 10 days, so Home Assistant fetches a new one 3 days before. You are only asked again when Sony rejects the NPSSO (about every two months).
+- **Diagnostics leave out** pairing keys, tokens, account IDs, IP and MAC address.
+
 ## Good to know
 
-- **Play time counts the time the console is on**, measured locally every five seconds, so it works without the cloud. "Today" starts at midnight and "this week" on Monday, both in Home Assistant's time zone; a session that runs over midnight is split there. With the PSN cloud, "Play time in game today" only counts while a game is running, and the attribute `games` lists the minutes per game. The counters survive restarts, but the time Home Assistant itself is down is not counted.
+- Wake-up works from rest mode only, not when the console is fully off.
+- If the PS5 refuses rest mode (it does for about a minute after waking up), Home Assistant retries in the background and keeps showing off.
+- No game launching or button presses. That would need a full Remote Play session.
+- System updates are installed by the PS5 itself in rest mode. The update entity only shows that one is there.
 
-- **Wake-up works from rest mode only**, not when the console is fully off.
-- **No current game without the cloud.** Unlike the PS4, the PS5 does not report it locally.
-- **System updates** are installed by the PS5 itself in rest mode ("Install automatically" in its settings). The update entity only shows whether one is available.
-- **No game launching or button presses.** That would need a full Remote Play session.
-- **Do not poll Remote Play.** Every session reserves Remote Play on the console for about a minute, so the integration only opens one to switch off. The status comes from the discovery protocol.
+<details>
+<summary>Troubleshooting</summary>
 
-## Troubleshooting
-
-- **"The PS5 is not waiting for pairing".** Keep **Pair device** open on the PS5 until Home Assistant has finished.
-- **Switching off says the pairing is no longer known.** The device was removed on the PS5 under Remote Play. Home Assistant asks for a new PIN.
-- **Wake-up does nothing.** Check the rest mode settings above; a console that was fully off cannot be woken.
-- **Cloud entities unavailable.** Sony is not reachable or the login expired; check the repairs.
-- **Diagnostics:** **Settings > Devices & services > PlayStation 5 > three dots > Download diagnostics**. Keys, tokens, account IDs, IP and MAC address are redacted.
+- **"The PS5 is not waiting for pairing".** Keep **Pair device** open on the PS5 until Home Assistant is done.
+- **Switching off asks for a new PIN.** The device was removed on the PS5 under Remote Play. Pair again.
+- **Wake-up does nothing.** Check the three rest mode switches under [Set up](#set-up).
+- **Cloud entities unavailable.** Sony is not reachable or the login was rejected. Look at **Settings > Repairs**.
 - **Debug log:**
 
   ```yaml
@@ -190,27 +149,35 @@ actions:
       custom_components.ps5: debug
   ```
 
-When you open an [issue](https://github.com/SH1FT-W/playstation-5/issues), please attach the diagnostics file. Never post your NPSSO token.
+When you open an [issue](https://github.com/SH1FT-W/playstation-5/issues), attach the diagnostics (**Settings > Devices & services > PlayStation 5 > three dots > Download diagnostics**). Never post your NPSSO token.
 
-## Removal
+</details>
+
+<details>
+<summary>Remove</summary>
 
 1. **Settings > Devices & services > PlayStation 5 > three dots > Delete**.
-2. On the PS5, remove the paired device under **Settings > System > Remote Play**.
-3. Delete the folder `/config/custom_components/ps5` (or remove the repository in the Marketplace) and restart Home Assistant.
+2. On the PS5, remove the device under **Settings > System > Remote Play**.
+3. Remove the repository in the Marketplace (or delete `/config/custom_components/ps5`) and restart Home Assistant.
 
-## How it works
+</details>
 
-<!-- cards:how -->
-<table>
-<tr><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/radar-dark.svg"><img src="docs/images/icons/radar-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>DDP, UDP 9302</b><br>Status and wake-up, the way the PS App finds the console at home. Every 5 seconds.</td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/remote-dark.svg"><img src="docs/images/icons/remote-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Remote Play, TCP 9295</b><br>One-time pairing with the PIN, then a short session that only sends rest mode.</td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/cloud-outline-dark.svg"><img src="docs/images/icons/cloud-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>PSN, optional</b><br>Game, trophies and profile from Sony once a minute. Control never goes through the cloud.</td></tr>
-</table>
-<!-- /cards:how -->
+<details>
+<summary>How it works</summary>
 
-Status every 5 seconds, the PSN cloud once a minute, Sony's update page every 6 hours.
+| Channel | Used for | How often |
+|:--|:--|:--|
+| DDP, UDP 9302 | Status and wake-up, like the PS App at home | every 5 seconds |
+| Remote Play, TCP 9295 | Pairing once, then a short session that only sends rest mode | when switching off |
+| PSN (optional) | Game, trophies, profile | every minute |
+| Sony's update page | Latest system software | every 6 hours |
 
-The Remote Play handshake (pairing, wake-up credential, rest mode session) is re-implemented after [pyremoteplay](https://github.com/ktnrg45/pyremoteplay) by ktnrg45, and the key tables in `keys.py` are taken from it; pyremoteplay builds on [Chiaki](https://git.sr.ht/~thestr4ng3r/chiaki). The PSN sign-in uses the same public PS App client parameters as [PSNAWP](https://github.com/isFakeAccount/psnawp). Thanks for the groundwork. Details are in [`NOTICE`](NOTICE); protocol notes, including the console's pitfalls, are in [`CLAUDE.md`](CLAUDE.md) (German).
+The Remote Play handshake is re-implemented after [pyremoteplay](https://github.com/ktnrg45/pyremoteplay) by ktnrg45, and the key tables in `keys.py` are taken from it; pyremoteplay builds on [Chiaki](https://git.sr.ht/~thestr4ng3r/chiaki). The PSN sign-in uses the same public PS App client parameters as [PSNAWP](https://github.com/isFakeAccount/psnawp). Thanks for the groundwork. Details in [`NOTICE`](NOTICE), protocol notes in [`CLAUDE.md`](CLAUDE.md) (German).
 
-## Development
+</details>
+
+<details>
+<summary>Development</summary>
 
 ```bash
 python -m pytest -q -p no:logging        # fake PS5 on localhost in tests/fake_ps5.py, no console needed
@@ -219,10 +186,12 @@ uvx mypy@2.3.1 --python-executable <venv>/bin/python
 python tools/pruefe-uebersetzungen.py    # strings.json against translations/*.json
 ```
 
-Install the test requirements with `pip install -r requirements_test.txt`. The same checks run on GitHub Actions for every push and pull request, plus HACS validation and hassfest.
+Test requirements: `pip install -r requirements_test.txt`. GitHub Actions runs the same checks plus HACS validation and hassfest. Quality scale: platinum, [self-assessed](custom_components/ps5/quality_scale.yaml).
+
+</details>
 
 ## License
 
-[GNU General Public License v3.0](LICENSE), Copyright 2026 SH1FT-W.
+[GPLv3](LICENSE), because the Remote Play protocol and key tables come from pyremoteplay. Copyright 2026 SH1FT-W.
 
-Because the Remote Play protocol and key tables come from pyremoteplay (GPLv3), the whole integration is licensed under the GPLv3. See [`NOTICE`](NOTICE) for the third-party material and trademarks.
+<sub>PlayStation 5 is an independent project, not affiliated with, endorsed or sponsored by Sony Interactive Entertainment. PlayStation, PS5 and PlayStation Network are trademarks or registered trademarks of Sony Interactive Entertainment Inc.</sub>
