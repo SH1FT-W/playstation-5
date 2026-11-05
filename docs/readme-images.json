@@ -57,7 +57,7 @@
         "v"
       ],
       [
-        "HACS"
+        "Marketplace"
       ]
     ],
     "logo": "docs/images/readme-icon.png",
@@ -76,6 +76,7 @@
       "bar": "Home Assistant › PlayStation 5",
       "left": 590,
       "top": 80
-    }
+    },
+    "layout": "center"
   }
 }
