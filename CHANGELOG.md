@@ -1,5 +1,9 @@
 # Changelog
 
+## 26.11.3 – 05.11.2026
+
+- README and project page: new layout, shorter and easier to scan, with one table at the core. New title picture.
+
 ## 26.11.2 – 04.11.2026
 
 - **Fix:** Turning the console on while rest mode is still being retried in the background (after the PS5 refused
