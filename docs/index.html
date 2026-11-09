@@ -13,12 +13,9 @@
 <meta property="og:description" content="Status, wake-up and rest mode for the PS5, fully local. Game and trophies optional.">
 <meta property="og:image" content="https://sh1ft-w.github.io/playstation-5/images/readme-title-social.png">
 <link rel="icon" href="logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- Shared SH1FT-W design (tokens, glass navigation, light/dark, DE/EN, reveal) -->
-<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v1/theme.css">
-<script src="https://sh1ft-w.github.io/theme/v1/theme.js"></script>
+<!-- Shared SH1FT-W design, version 2 (tokens, Archivo, navigation, light/dark, DE/EN, the lanes) -->
+<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v2/theme.css">
+<script src="https://sh1ft-w.github.io/theme/v2/theme.js"></script>
 <style>
 /* PS5-Palette: kühles Weiß bei Tag, tiefes Nachtblau bei Nacht, ein Akzent in PlayStation-Blau */
 :root {
@@ -98,19 +95,12 @@ section.tint { background: var(--bg-2); }
 
 /* Hero */
 .hero { padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 8vw, 104px); text-align: center; overflow: hidden; }
-.hero .glow { position: absolute; inset: -20% -10% auto; height: 90%; pointer-events: none;
-  background: radial-gradient(40% 36% at 30% 30%, rgba(0,112,209,0.2), transparent 70%), radial-gradient(36% 34% at 72% 24%, rgba(90,166,255,0.18), transparent 70%);
-  filter: blur(50px); }
 .hero .wrap { position: relative; }
 .hero .lead { max-width: 660px; margin-left: auto; margin-right: auto; }
 .cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
 .meta { margin-top: 22px; font-size: 14px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; align-items: center; }
 .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-weight: 600; color: var(--ink-2); font-size: 13px; }
 .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); display: inline-block; }
-
-/* Bühne: das README-Titelbild */
-.stage { position: relative; margin: clamp(48px, 7vw, 84px) auto 0; max-width: 1100px; }
-.stage .photo { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
 
 /* Bento: Gerade neu */
 .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
@@ -256,6 +246,35 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
   .tbl.ctl th:not(:first-child), .tbl.ctl td:not(:first-child) { width: 72px; }
   .shield { flex-direction: column; }
 }
+
+/* ---- theme v2 ---- */
+:root { --font: "Archivo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif; --display: var(--font); --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --lane-a: #0070D1; --lane-b: #5AA6FF; --radius: 20px; --radius-lg: 28px; --max: 1200px; }
+body { font-family: var(--font); }
+h1 { font-size: clamp(44px, 6vw, 84px); line-height: 1; font-weight: 800; font-stretch: 118%; font-style: italic; letter-spacing: -0.025em; }
+h2 { font-size: clamp(30px, 3.8vw, 48px); line-height: 1.08; font-weight: 750; font-stretch: 112%; letter-spacing: -0.02em; }
+h3 { font-stretch: 106%; }
+h1 em, h2 em { color: inherit !important; font-style: inherit; }
+.center { text-align: left; } .center .lead { margin-left: 0; margin-right: 0; }
+.head { max-width: 50em; }
+.eyebrow { text-transform: none; letter-spacing: 0; font-size: 16px; font-weight: 650; margin-bottom: 12px; }
+.eyebrow::before { display: none; }
+.cap { text-align: left; }
+.btn { border-radius: 12px; box-shadow: none; }
+.btn.ghost { background: var(--chip); box-shadow: none; }
+.pill { box-shadow: none; background: var(--chip); border-radius: 8px; }
+.b, .tile, .panel, .prof, .tbl, .faq details, .flow .lane { box-shadow: none; border: 1px solid var(--line); }
+.b .tag, .tg, .tbl thead th, .tbl .grp td { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.b .tag, .tg { border-radius: 6px; }
+.tile .ico, .shield .ico { border-radius: 10px; }
+.hero { text-align: left; padding: clamp(48px, 7vw, 96px) 0 clamp(56px, 7vw, 96px); overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: center; }
+.hero .mark { width: 64px; height: 64px; border-radius: 15px; margin-bottom: 26px; }
+.hero .lead { margin-left: 0; max-width: 34em; }
+.cta, .meta { justify-content: flex-start; }
+.hero .s-lanes { margin-right: calc(-1 * var(--gutter) - 14vw); }
+.s-track b { color: #fff; font: italic 800 clamp(20px, 2.5vw, 34px)/1 var(--font); font-stretch: 116%; letter-spacing: -0.015em; white-space: nowrap; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } .hero .s-lanes { margin: 8px calc(-1 * var(--gutter) - 8vw) 0 44px; } }
 </style>
 </head>
 <body>
@@ -281,25 +300,24 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
 </div>
 
 <section class="hero" id="top">
-  <div class="glow" aria-hidden="true"></div>
   <div class="wrap">
-    <p class="eyebrow reveal"><span class="en">The PS5 in Home Assistant</span><span class="de">Die PS5 in Home Assistant</span></p>
-    <h1 class="reveal d1"><span class="en">Your PS5,<br><em>fully local.</em></span><span class="de">Deine PS5,<br><em>ganz lokal.</em></span></h1>
-    <p class="lead reveal d2"><span class="en">Your PS5 in Home Assistant, the way the PS App sees it at home: <strong>on, rest mode or off, wake it up, send it to sleep.</strong> Straight over your network, without cloud, MQTT or an extra app. Game and trophies come <strong>optionally</strong> with your PSN login.</span><span class="de">Deine PS5 in Home Assistant, so wie die PS-App sie im Heimnetz sieht: <strong>an, Ruhemodus oder aus, aufwecken, schlafen schicken.</strong> Direkt über dein Netz, ohne Cloud, MQTT oder Zusatz-App. Spiel und Trophäen kommen <strong>auf Wunsch</strong> mit deiner PSN-Anmeldung.</span></p>
-    <div class="cta reveal d3">
+    <div>
+      <img class="mark" src="logo.png" alt="" width="64" height="64">
+      <h1><span class="en">Your PS5, fully local.</span><span class="de">Deine PS5, ganz lokal.</span></h1>
+      <p class="lead reveal d2"><span class="en">Your PS5 in Home Assistant, the way the PS App sees it at home: <strong>on, rest mode or off, wake it up, send it to sleep.</strong> Straight over your network, without cloud, MQTT or an extra app. Game and trophies come <strong>optionally</strong> with your PSN login.</span><span class="de">Deine PS5 in Home Assistant, so wie die PS-App sie im Heimnetz sieht: <strong>an, Ruhemodus oder aus, aufwecken, schlafen schicken.</strong> Direkt über dein Netz, ohne Cloud, MQTT oder Zusatz-App. Spiel und Trophäen kommen <strong>auf Wunsch</strong> mit deiner PSN-Anmeldung.</span></p>
+      <div class="cta reveal d3">
       <a class="btn" href="#install"><span class="en">Install from the Marketplace</span><span class="de">Über den Marketplace installieren</span></a>
       <a class="btn ghost" href="https://github.com/SH1FT-W/playstation-5#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
     </div>
-    <p class="meta reveal d3">
+      <p class="meta reveal d3">
       <span class="pill"><i></i><span id="ps5-version">Version 26.11.2</span></span>
       <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; GPLv3</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; GPLv3</span>
     </p>
-
-    <div class="stage reveal d3">
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="images/readme-title-dark.webp">
-        <img class="photo" src="images/readme-title-light.webp" width="2560" height="1280" alt="PlayStation 5: Your PS5, fully local.">
-      </picture>
+    </div>
+    <div class="s-lanes" aria-hidden="true">
+      <div class="s-lane"><div class="s-track"><b><span class="en">Local, no cloud</span><span class="de">Lokal, ohne Cloud</span></b></div></div>
+      <div class="s-lane"><div class="s-track"><b><span class="en">Wake and rest mode</span><span class="de">Aufwecken und Ruhemodus</span></b></div></div>
+      <div class="s-lane"><div class="s-track"><b><span class="en">In the Marketplace</span><span class="de">Im Marketplace</span></b></div></div>
     </div>
   </div>
 </section>

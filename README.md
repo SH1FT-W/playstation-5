@@ -2,14 +2,14 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
-  <img src="docs/images/readme-title-light.webp" alt="PlayStation 5: Your PS5, fully local." />
+  <img src="docs/images/readme-title-light.webp" alt="PlayStation 5: your PS5 in Home Assistant, fully local. Local, no cloud. Wake and rest mode. In the Marketplace." />
 </picture>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fplaystation-5%2Fmain%2Fcustom_components%2Fps5%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=0070D1&labelColor=111111)](https://github.com/SH1FT-W/playstation-5/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-0070D1?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-default-0070D1?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
-<a href="https://sh1ft-w.github.io/playstation-5"><b>Website</b></a>&emsp;<a href="#install">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>
+<a href="https://sh1ft-w.github.io/playstation-5"><b>Website</b></a>&emsp;<a href="#get-started">Get started</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="#examples">Examples</a>&emsp;<a href="CHANGELOG.md">Changelog</a>
 
 </div>
 
@@ -19,7 +19,7 @@ Your PS5 in Home Assistant, the way the PS App sees it at home: **on, rest mode 
 
 The PS5 does not tell the local network which game is running. If you want the game, trophies and online status too, add your PlayStation Network login. Control never goes through it.
 
-## Local or with the PSN cloud
+## What you get
 
 |  | Local | With PSN login |
 |:--|:--:|:--:|
@@ -33,12 +33,19 @@ The PS5 does not tell the local network which game is running. If you want the g
 
 **New in 26.11:** play time sensors for daily limits, and the PSN login can be switched on right in setup. Every change is in the [changelog](CHANGELOG.md).
 
-<a id="install"></a>
-## Install
+<a id="get-started"></a><a id="install"></a><a id="set-up"></a>
+## Get started
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=playstation-5&category=integration)
 
-Search for **PlayStation 5** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+Before you start, check three switches on the PS5: **Enable Remote Play**, and under **Power Saving > Features Available in Rest Mode** both **Stay Connected to the Internet** and **Enable Turning On PS5 from Network**. Without them it cannot be woken.
+
+1. **Install it.** Search for **PlayStation 5** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+2. **Add the console.** It usually shows up under **Settings > Devices & services > Discovered**. If not, choose **Add integration > PlayStation 5**. It has to be on or in rest mode.
+3. **Pair it.** On the PS5 open **Settings > System > Remote Play > Pair device** and enter the 8-digit PIN in Home Assistant.
+4. **Your PSN account.** Enter the account ID if you know it (it is filled in when the PlayStation Network integration is set up). Otherwise paste an NPSSO token: sign in at playstation.com, open https://ca.account.sony.com/api/v1/ssocookie and copy the value after `npsso`. Leave **Also use the NPSSO token for the PSN cloud** ticked to switch on game, trophies and online status right away.
+
+You can add the PSN login later under **three dots > Configure**. A new IP address is picked up by itself; if not, use **three dots > Reconfigure**.
 
 <details>
 <summary>Install by hand</summary>
@@ -47,17 +54,6 @@ Search for **PlayStation 5** under **Settings > Marketplace** (called HACS befor
 2. Copy `custom_components/ps5` into `/config/custom_components/` and restart Home Assistant.
 
 </details>
-
-<a id="set-up"></a>
-## Set up
-
-Before you start, check three switches on the PS5: **Enable Remote Play**, and under **Power Saving > Features Available in Rest Mode** both **Stay Connected to the Internet** and **Enable Turning On PS5 from Network**. Without them it cannot be woken.
-
-1. **Add the console.** It usually shows up under **Settings > Devices & services > Discovered**. If not, choose **Add integration > PlayStation 5**. It has to be on or in rest mode.
-2. **Pair it.** On the PS5 open **Settings > System > Remote Play > Pair device** and enter the 8-digit PIN in Home Assistant.
-3. **Your PSN account.** Enter the account ID if you know it (it is filled in when the PlayStation Network integration is set up). Otherwise paste an NPSSO token: sign in at playstation.com, open https://ca.account.sony.com/api/v1/ssocookie and copy the value after `npsso`. Leave **Also use the NPSSO token for the PSN cloud** ticked to switch on game, trophies and online status right away.
-
-You can add the PSN login later under **three dots > Configure**. A new IP address is picked up by itself; if not, use **three dots > Reconfigure**.
 
 <a id="entities"></a>
 ## Entities
@@ -88,6 +84,7 @@ IDs for a console named "PlayStation 5". Names are in English and German.
 
 </details>
 
+<a id="examples"></a>
 ## Examples
 
 Switch the TV to the console's input when the PS5 starts:
@@ -139,7 +136,7 @@ actions:
 
 - **"The PS5 is not waiting for pairing".** Keep **Pair device** open on the PS5 until Home Assistant is done.
 - **Switching off asks for a new PIN.** The device was removed on the PS5 under Remote Play. Pair again.
-- **Wake-up does nothing.** Check the three rest mode switches under [Set up](#set-up).
+- **Wake-up does nothing.** Check the three rest mode switches under [Get started](#get-started).
 - **Cloud entities unavailable.** Sony is not reachable or the login was rejected. Look at **Settings > Repairs**.
 - **Debug log:**
 
@@ -195,3 +192,11 @@ Test requirements: `pip install -r requirements_test.txt`. GitHub Actions runs t
 [GPLv3](LICENSE), because the Remote Play protocol and key tables come from pyremoteplay. Copyright 2026 SH1FT-W.
 
 <sub>PlayStation 5 is an independent project, not affiliated with, endorsed or sponsored by Sony Interactive Entertainment. PlayStation, PS5 and PlayStation Network are trademarks or registered trademarks of Sony Interactive Entertainment Inc.</sub>
+
+<br/>
+
+<div align="center">
+<a href="https://sh1ft-w.github.io"><img src="https://sh1ft-w.github.io/readme/footer.png" width="640" alt="All SH1FT-W projects"></a>
+<br/>
+<sub>More open source for Home Assistant and the Mac at <a href="https://sh1ft-w.github.io">sh1ft-w.github.io</a></sub>
+</div>
