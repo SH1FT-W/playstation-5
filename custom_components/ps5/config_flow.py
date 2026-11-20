@@ -9,12 +9,11 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResu
 from homeassistant.const import CONF_HOST
 from homeassistant.core import callback
 from homeassistant.helpers import selector
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 import voluptuous as vol
 
-from .cloud import SSO_URL, async_activate, cloud_data, deactivate
+from .cloud import SSO_URL, async_activate, async_exchange_npsso, cloud_data, deactivate
 from .const import (
     CONF_ACCOUNT_ID,
     CONF_DISABLE_CLOUD,
@@ -35,7 +34,7 @@ from .protocol import (
     async_get_status,
     async_register,
 )
-from .psn import PSNError, PSNTokenError, async_account_id_for_token, async_token_from_npsso
+from .psn import PSNError, PSNTokenError
 
 _PIN = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.NUMBER))
 _SECRET = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD))
@@ -156,9 +155,7 @@ class PS5ConfigFlow(ConfigFlow, domain=DOMAIN):
             use_cloud = self.source != "reauth" and bool(user_input.get(CONF_PSN_CLOUD, True))
             if npsso and (not account or use_cloud):
                 try:
-                    session = async_get_clientsession(self.hass)
-                    token = await async_token_from_npsso(session, npsso)
-                    psn_account = await async_account_id_for_token(session, str(token["access_token"]))
+                    psn_account, token = await async_exchange_npsso(self.hass, npsso)
                 except PSNTokenError:
                     errors[CONF_NPSSO] = "invalid_npsso"
                 except PSNError:

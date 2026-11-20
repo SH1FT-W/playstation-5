@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Fix:** The PSN cloud talks to Sony on a session of its own without a cookie store. Before, Sony's login cookies
+  stayed in Home Assistant's shared web session and won over the NPSSO token sent with the next exchange: a new
+  NPSSO pasted into the repair, or a second console with another PSN account, could quietly reach Sony as the old
+  login.
+- Tests: two NPSSO exchanges in a row against a local stand-in for Sony that sets the login cookie.
+
 ## 26.11.3 – 05.11.2026
 
 - README and project page: new layout, shorter and easier to scan, with one table at the core. New title picture.

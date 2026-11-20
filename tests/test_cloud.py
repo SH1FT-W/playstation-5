@@ -8,8 +8,10 @@ from typing import Any
 from unittest.mock import patch
 
 import aiohttp
+from aiohttp import web
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers import aiohttp_client, issue_registry as ir
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.setup import async_setup_component
 import pytest
@@ -18,7 +20,7 @@ from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClien
 from pytest_homeassistant_custom_component.typing import ClientSessionGenerator
 
 from custom_components.ps5 import psn
-from custom_components.ps5.cloud import PSNCoordinator, issue_id
+from custom_components.ps5.cloud import PSNCoordinator, async_exchange_npsso, issue_id
 from custom_components.ps5.const import DOMAIN
 from custom_components.ps5.firmware import INFO_URL, FirmwareCoordinator, local_version, parse_info_page
 
@@ -340,3 +342,58 @@ async def test_firmware_page_errors(hass: HomeAssistant, console: Console, aiocl
         assert err.value.translation_key == key
     update = hass.states.get("update.ps5_123_system_software")
     assert update.attributes["installed_version"] == "14.10.00"
+
+
+async def test_npsso_exchange_keeps_no_sony_cookies(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch, socket_enabled: None
+) -> None:
+    """Sony's login cookies must not stick in HA's shared session.
+
+    A real local server stands in for Sony and sets the npsso cookie like a login does. aiohttp lets a stored cookie
+    win over the Cookie header we send, so with a cookie jar a new NPSSO (repair, second console with another
+    account) would quietly reach Sony as the old one.
+    """
+    sent: list[str] = []
+
+    async def authorize(request: web.Request) -> web.Response:
+        sent.append(request.headers.get("Cookie", ""))
+        npsso = request.headers.get("Cookie", "").removeprefix("npsso=")
+        resp = web.Response(status=302, headers={"Location": "x://r?code=c"})
+        resp.set_cookie("npsso", npsso, path="/")
+        return resp
+
+    async def token(request: web.Request) -> web.Response:
+        return web.json_response({"access_token": "acc", "expires_in": 3600, "refresh_token": "refresh-2"})
+
+    async def account(request: web.Request) -> web.Response:
+        return web.json_response({"accountId": ACCOUNT})
+
+    app = web.Application()
+    app.router.add_get("/authorize", authorize)
+    app.router.add_post("/token", token)
+    app.router.add_get("/account", account)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "127.0.0.1", 0)
+    await site.start()
+    port = runner.addresses[0][1]
+    base = f"http://localhost:{port}"
+    monkeypatch.setattr(psn, "AUTHORIZE_URL", f"{base}/authorize")
+    monkeypatch.setattr(psn, "TOKEN_URL", f"{base}/token")
+    monkeypatch.setattr(psn, "ACCOUNT_URL", f"{base}/account")
+    # HA's mDNS/DNS resolver does not run in the test loop; "localhost" (not an IP) so the jar would keep the cookie
+    monkeypatch.setattr(aiohttp_client, "_async_get_or_create_resolver", lambda hass: aiohttp.ThreadedResolver())
+    try:
+        # Setup or options with one NPSSO, later the repair with a new one
+        assert (await async_exchange_npsso(hass, "a" * 64))[0] == ACCOUNT
+        assert (await async_exchange_npsso(hass, "b" * 64))[0] == ACCOUNT
+        # Renewal by the cloud coordinator uses its own session as well
+        entry = MockConfigEntry(domain=DOMAIN, title="PS5-123", unique_id=MAC, data=CLOUD_DATA)
+        entry.add_to_hass(hass)
+        coordinator = PSNCoordinator(hass, entry)
+        await psn.async_token_from_npsso(coordinator.client._session, "c" * 64)
+        await psn.async_token_from_npsso(coordinator.client._session, "d" * 64)
+    finally:
+        await runner.cleanup()
+    assert sent == ["npsso=" + c * 64 for c in "abcd"]
+    assert not list(async_get_clientsession(hass).cookie_jar)

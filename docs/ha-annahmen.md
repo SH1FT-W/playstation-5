@@ -27,6 +27,7 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | Sensor mit `device_class` duration + `state_class` total + `last_reset` (Tages-/Wochenbeginn) wird von der Statistik als zurückgesetzter Zähler gelesen | `sensor.py` `PlayTimeSensor` | `test_counts_only_while_on` (Attribute) |
 | `async_remove_entry` läuft beim Löschen des Eintrags (Spielzeit-Store mit löschen) | `__init__.py` | `test_restart_on_a_later_day` |
 | `ImageEntity.__init__(self, hass)` muss von Hand aufgerufen werden (Mehrfachvererbung) | `image.py` | `test_cloud_values` |
+| `async_create_clientsession(hass, cookie_jar=DummyCookieJar())` gibt eine eigene Session ohne Cookies (HAs gemeinsame Session behält Cookies, und aiohttp lässt gespeicherte Cookies den gesendeten `Cookie`-Kopf überschreiben); im Setup erzeugt löst HA sie beim Entladen, sonst `detach()` | `cloud.py` `psn_session`, `async_exchange_npsso` | `tests/test_cloud.py::test_npsso_exchange_keeps_no_sony_cookies` |
 
 ## Fremde Integrationen
 

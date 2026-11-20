@@ -14,9 +14,10 @@ import logging
 import time
 from typing import TYPE_CHECKING, Any
 
+import aiohttp
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import CONF_PSN_ACCOUNT_ID, CONF_PSN_EXPIRES, CONF_PSN_NPSSO, CONF_PSN_TOKEN, DOMAIN
@@ -35,6 +36,28 @@ WARN_BEFORE = 7 * 24 * 3600
 # So früh holt das gespeicherte NPSSO ein neues Erneuerungs-Token; klappt das nicht, erscheint die Reparatur
 RENEW_BEFORE = 3 * 24 * 3600
 SSO_URL = "https://ca.account.sony.com/api/v1/ssocookie"
+
+
+def psn_session(hass: HomeAssistant, *, auto_cleanup: bool = True) -> aiohttp.ClientSession:
+    """Own session without a cookie jar for everything that talks to Sony.
+
+    Sony sets cookies when an NPSSO is exchanged. In HA's shared session they would stay, and aiohttp lets a stored
+    cookie win over the `Cookie` header we send: a later exchange (new NPSSO from the repair, a second console with
+    another account) would quietly use the old login. With auto_cleanup HA detaches the session when the entry is
+    unloaded (created during setup) or HA stops; without it the caller has to call `detach()`.
+    """
+    return async_create_clientsession(hass, auto_cleanup=auto_cleanup, cookie_jar=aiohttp.DummyCookieJar())
+
+
+async def async_exchange_npsso(hass: HomeAssistant, npsso: str) -> tuple[str, dict[str, Any]]:
+    """NPSSO → (account ID, token answer), on a session of its own (setup, options, repair)."""
+    session = psn_session(hass, auto_cleanup=False)
+    try:
+        token = await async_token_from_npsso(session, npsso)
+        account_id = await async_account_id_for_token(session, str(token["access_token"]))
+    finally:
+        session.detach()
+    return account_id, token
 
 
 def issue_id(entry_id: str) -> str:
@@ -80,8 +103,10 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
     def __init__(self, hass: HomeAssistant, entry: PS5ConfigEntry) -> None:
         super().__init__(hass, _LOGGER, config_entry=entry, name=f"{DOMAIN}_psn", update_interval=CLOUD_INTERVAL)
         self._entry = entry
+        # Created during setup, so HA detaches it again when the entry is unloaded
+        self._session = psn_session(hass)
         self.client = PSNClient(
-            async_get_clientsession(hass),
+            self._session,
             str(entry.data[CONF_PSN_ACCOUNT_ID]),
             str(entry.data[CONF_PSN_TOKEN]),
             self._save_token,
@@ -128,9 +153,7 @@ class PSNCoordinator(DataUpdateCoordinator[PSNData]):
         if not force and (expires is None or expires - time.time() > RENEW_BEFORE):
             return False
         try:
-            token = await async_token_from_npsso(
-                async_get_clientsession(self.hass), str(self._entry.data[CONF_PSN_NPSSO])
-            )
+            token = await async_token_from_npsso(self._session, str(self._entry.data[CONF_PSN_NPSSO]))
         except PSNTokenError:
             _LOGGER.warning("%s: Sony rejected the stored NPSSO token, a repair asks for a new one", self._entry.title)
             self._npsso_rejected = True
@@ -196,9 +219,7 @@ async def async_activate(hass: HomeAssistant, entry: PS5ConfigEntry, npsso: str)
 
     Das NPSSO bleibt mit im Eintrag, damit die Integration später selbst neue Erneuerungs-Tokens holen kann.
     """
-    session = async_get_clientsession(hass)
-    token = await async_token_from_npsso(session, npsso)
-    account_id = await async_account_id_for_token(session, str(token["access_token"]))
+    account_id, token = await async_exchange_npsso(hass, npsso)
     data = {**entry.data, **cloud_data(account_id, token, npsso)}
     hass.config_entries.async_update_entry(entry, data=data)
     ir.async_delete_issue(hass, DOMAIN, issue_id(entry.entry_id))
