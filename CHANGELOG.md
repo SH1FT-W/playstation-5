@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 26.11.4 – 26.11.2026
 
+- **Fix:** The current game and its cover also show while the PSN profile is set to "appear offline". Sony still
+  lists the running game then, but reports the platform as offline, and the integration only took the game while
+  it said online. Whether the console is on now comes from the local status alone, as it already did for the game
+  sensor; the game cover follows it too, so it no longer stays up in rest mode. Refs #1
 - **Fix:** The PSN cloud talks to Sony on a session of its own without a cookie store. Before, Sony's login cookies
   stayed in Home Assistant's shared web session and won over the NPSSO token sent with the next exchange: a new
   NPSSO pasted into the repair, or a second console with another PSN account, could quietly reach Sony as the old

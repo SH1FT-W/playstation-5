@@ -24,7 +24,18 @@ async def async_setup_entry(
         psn = coordinator.psn
         async_add_entities(
             [
-                PSNImage(hass, coordinator, psn, "game_cover", lambda d: d.cover_url if d.playing_on_ps5 else None),
+                PSNImage(
+                    hass,
+                    coordinator,
+                    psn,
+                    "game_cover",
+                    # Only while the PS5 is on (like the game sensor): PSN may still list a game in rest mode
+                    lambda d: (
+                        d.cover_url
+                        if d.playing_on_ps5 and coordinator.data is not None and coordinator.data.is_on
+                        else None
+                    ),
+                ),
                 PSNImage(hass, coordinator, psn, "avatar", lambda d: d.avatar_url),
             ]
         )

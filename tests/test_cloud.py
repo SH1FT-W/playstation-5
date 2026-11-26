@@ -397,3 +397,33 @@ async def test_npsso_exchange_keeps_no_sony_cookies(
         await runner.cleanup()
     assert sent == ["npsso=" + c * 64 for c in "abcd"]
     assert not list(async_get_clientsession(hass).cookie_jar)
+
+
+async def test_game_while_appearing_offline(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Profile set to "appear offline": Sony still lists the running game, only the status says offline (#1)."""
+    console.answer = status(True)
+    hidden = {
+        "basicPresence": {
+            **PRESENCE["basicPresence"],
+            "availability": "unavailable",
+            "primaryPlatformInfo": {"onlineStatus": "offline", "platform": "PS5"},
+        }
+    }
+    mock_psn(aioclient_mock, presence=hidden)
+    await _setup(hass)
+    state = hass.states.get
+    assert state("sensor.ps5_123_online_status").state == "offline"
+    assert state("sensor.ps5_123_game").state == "EA SPORTS FC 26"
+    assert state("media_player.ps5_123").attributes["media_title"] == "EA SPORTS FC 26"
+    assert state("image.ps5_123_game_cover").state not in ("unavailable", "unknown")
+
+
+async def test_no_cover_while_ps5_off(
+    hass: HomeAssistant, console: Console, aioclient_mock: AiohttpClientMocker
+) -> None:
+    """Without the online status as a hint, the local console state decides: in rest mode no game cover."""
+    mock_psn(aioclient_mock)
+    await _setup(hass)  # PS5 in rest mode
+    assert hass.states.get("image.ps5_123_game_cover").state == "unknown"

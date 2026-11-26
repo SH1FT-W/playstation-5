@@ -81,10 +81,10 @@ class PSNData:
 
     @property
     def playing_on_ps5(self) -> bool:
+        """A game on the PS5. Not tied to onlineStatus: with "appear offline" Sony still lists the running game but
+        reports "offline" (#1), so whether the console is on comes from the local status (callers check it)."""
         info = self.presence.get("primaryPlatformInfo") or {}
-        return (
-            bool(self.game) and str(info.get("platform", "")).upper() == "PS5" and info.get("onlineStatus") == "online"
-        )
+        return bool(self.game) and str(info.get("platform", "")).upper() == "PS5"
 
     @property
     def cover_url(self) -> str | None:
